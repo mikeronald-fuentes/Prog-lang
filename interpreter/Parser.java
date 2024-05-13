@@ -106,7 +106,7 @@ class Parser {
     private Expr comparison() {
         Expr expr = term();
     
-        while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+        while (match(GREATER_THAN, GREATER_THAN_EQUAL, LESS_THAN, LESS_THAN_EQUAL)) {
           Token operator = previous();
           Expr right = term();
           expr = new Expr.Binary(expr, operator, right);
@@ -119,7 +119,7 @@ class Parser {
     private Expr term() {
         Expr expr = factor();
     
-        while (match(MINUS, PLUS)) {
+        while (match(SUBTRACTION, ADDITION)) {
           Token operator = previous();
           Expr right = factor();
           expr = new Expr.Binary(expr, operator, right);
@@ -132,7 +132,7 @@ class Parser {
     private Expr factor() {
         Expr expr = unary();
     
-        while (match(SLASH, MULTIPLY)) {
+        while (match(DIVISION, MULTIPLY)) {
           Token operator = previous();
           Expr right = unary();
           expr = new Expr.Binary(expr, operator, right);
@@ -143,7 +143,7 @@ class Parser {
 
     // for unary operators
     private Expr unary() {
-        if (match(NOT, MINUS)) {
+        if (match(NOT, SUBTRACTION)) {
           Token operator = previous();
           Expr right = unary();
           return new Expr.Unary(operator, right);
@@ -164,9 +164,9 @@ class Parser {
         if (match(IDENTIFIER)) {
             return new Expr.Variable(previous());
           }
-        if (match(L_PAREN)) {
+        if (match(LEFT_PAREN)) {
           Expr expr = expression();
-          consume(R_PAREN, "Expect ')' after expression.");
+          consume(RIGHT_PAREN, "Expect ')' after expression.");
           return new Expr.Grouping(expr);
         }
         throw error(peek(), "Expect expression.");
@@ -254,7 +254,7 @@ class Parser {
     if (match(BEGIN) && match(CODE)) {
         return new Stmt.Block(block());
     }
-    if (match(L_BRACE)) return new Stmt.Block(block());
+    if (match(LEFT_BRACE)) return new Stmt.Block(block());
     return expressionStatement();
     }
 

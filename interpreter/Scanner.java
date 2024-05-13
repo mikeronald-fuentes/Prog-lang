@@ -51,33 +51,42 @@ class Scanner {
     private void scanToken() {
         char c = advance();
         switch (c) {
-        case '(': addToken(L_PAREN); break;
-        case ')': addToken(R_PAREN); break;
-        case '{': addToken(L_BRACE); break;
-        case '}': addToken(R_BRACE); break;
+        case '(': addToken(LEFT_PAREN); break;
+        case ')': addToken(RIGHT_PAREN); break;
+        case '[': addToken(LEFT_ESCAPE); break;
+        case '-': addToken(SUBTRACTION); break;
+        case '+': addToken(ADDITION); break;
+        case '*': addToken(MULTIPLY); break; 
+        case '/': addToken(DIVISION); break;
+        case '%': addToken(MODULO); break;
         case ',': addToken(COMMA); break;
         case '.': addToken(DOT); break;
-        case '-': addToken(MINUS); break;
-        case '+': addToken(PLUS); break;
-        case '*': addToken(MULTIPLY); break; 
-        case '/': addToken(SLASH); break;
         case ';': addToken(SEMICOLON); break;
         case ':': addToken(COLON); break;
+        case '$': addToken(NEW_LINE); break;
+        case '&': addToken(CONCATENATOR); break;
         case '"': string(); break;
         case '\'': charLiteral(); break;
         case '#': while (peek() != '\n' && !isAtEnd()) advance(); break;
-        case '!':
-        addToken(match('=') ? NOT_EQUAL : NOT);
-        break;
         case '=':
-        addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+          addToken(match('=') ? EQUAL_EQUAL : EQUAL);
         break;
         case '<':
-        addToken(match('=') ? LESS_EQUAL : LESS);
-        break;
+          if (match('>')){
+            addToken(NOT_EQUAL);
+          } else if (match('=')){
+            addToken(LESS_THAN_EQUAL);
+          } else {
+            addToken(LESS_THAN);
+          }
+          break;
         case '>':
-        addToken(match('=') ? GREATER_EQUAL : GREATER);
-        break;
+          if (match('=')){
+            addToken(GREATER_THAN_EQUAL);
+          } else {
+            addToken(GREATER_THAN);
+          }
+          break;
 
         case ' ':
         case '\r':
@@ -88,12 +97,6 @@ class Scanner {
             line++;
             break;
 
-        case 'o':
-            if (match('r')) {
-            addToken(OR);
-        }
-
-        break;
         default:
         if (isDigit(c)) {
             number();

@@ -1,5 +1,8 @@
 package interpreter;
 
+import static interpreter.TokenType.ADDITION;
+import static interpreter.TokenType.SUBTRACTION;
+
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>,
@@ -49,24 +52,24 @@ class Interpreter implements Expr.Visitor<Object>,
         Object right = evaluate(expr.right); 
 
         switch (expr.operator.type) {
-        case GREATER:
+        case GREATER_THAN:
             checkNumberOperands(expr.operator, left, right);
             return (double)left > (double)right;
-        case GREATER_EQUAL:
+        case GREATER_THAN_EQUAL:
             checkNumberOperands(expr.operator, left, right);
             return (double)left >= (double)right;
-        case LESS:
+        case LESS_THAN:
             checkNumberOperands(expr.operator, left, right);
             return (double)left < (double)right;
-        case LESS_EQUAL:
+        case LESS_THAN_EQUAL:
             checkNumberOperands(expr.operator, left, right);
             return (double)left <= (double)right;
-        case MINUS:
+        case SUBTRACTION:
             checkNumberOperands(expr.operator, left, right);
             return (double)left - (double)right;
         case NOT_EQUAL: return !isEqual(left, right);
         case EQUAL_EQUAL: return isEqual(left, right);
-        case PLUS:
+        case ADDITION:
             if (left instanceof Double && right instanceof Double) {
             return (double)left + (double)right;
             } 
@@ -77,7 +80,7 @@ class Interpreter implements Expr.Visitor<Object>,
             
             throw new RuntimeError(expr.operator,
             "Operands must be two numbers or two strings.");
-        case SLASH:
+        case DIVISION:
             checkNumberOperands(expr.operator, left, right);
             return (double)left / (double)right;
         case MULTIPLY:
@@ -100,7 +103,7 @@ class Interpreter implements Expr.Visitor<Object>,
         switch (expr.operator.type) {
         case NOT:
             return !isTruthy(right);
-        case MINUS:
+        case SUBTRACTION:
             checkNumberOperand(expr.operator, right);
             return -(double)right;
         }
