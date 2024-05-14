@@ -140,6 +140,23 @@ class Interpreter implements Expr.Visitor<Object>,
         environment.define(stmt.name.lexeme, value, Tokentype);
         return null;
     }
+
+    @Override
+    public Void visitStringStmt(Stmt.String stmt) {
+        Object value = null;
+        if (stmt.initializer != null) {
+            value = evaluate(stmt.initializer);
+            if (!(value instanceof String)) {
+                throw new RuntimeError(stmt.name, "Input must be an String");
+            }
+        }
+
+        String Tokentype = "String";
+
+        environment.define(stmt.name.lexeme, value, Tokentype);
+        return null;
+    }
+    
     @Override
     public Object visitUnaryExpr(Expr.Unary expr) {
         Object right = evaluate(expr.right);

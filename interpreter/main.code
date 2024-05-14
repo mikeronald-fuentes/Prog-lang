@@ -1,7 +1,7 @@
 # this is a sample program in CODE
 BEGIN CODE
 # this is a sample program in CODE
-CHAR char
+STRING char
 DISPLAY: char
 END CODE
 # this is a sample program in CODE
