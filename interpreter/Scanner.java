@@ -69,7 +69,7 @@ class Scanner {
         case '\'': charLiteral(); break;
         case '#': while (peek() != '\n' && !isAtEnd()) advance(); break;
         case '=':
-          addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+          addToken(match('=') ? EQUAL_EQUAL : ASSIGN);
         break;
         case '<':
           if (match('>')){

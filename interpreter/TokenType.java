@@ -4,11 +4,11 @@ enum TokenType {
     // Single-character tokens.
     CLASS, IF, ELSE, NULL, THIS, DISPLAY,
     TRUE, FALSE, WHILE, BEGIN, END, PRINT,
-    SCAN, BEGIN_IF, END_IF, CODE,
+    SCAN, BEGIN_IF, END_IF, CODE, 
 
     // literals
     INT, FLOAT, BOOL, DOUBLE, CHAR, STRING,
-    IDENTIFIER, NUMBER, VARIABLE,
+    IDENTIFIER, NUMBER, VARIABLE, ASSIGN,
     COMMENT_SYMBOL, RESERVED,
 
     // one or two character tokens

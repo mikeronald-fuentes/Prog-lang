@@ -65,9 +65,9 @@ abstract class Stmt {
         final Expr initializer;
     }
     static class Int extends Stmt {
-        Int(Token name, Expr intializer) {
+        Int(Token name, Expr initializer) {
             this.name = name;
-            this.intializer = intializer;
+            this.intializer = initializer;
         }
 
         @Override

@@ -50,8 +50,13 @@ public class Code {
     // Expr expression = parser.parse();
     List<Stmt> statements = parser.parse();
     // Stop if there was a syntax error.
-    if (hadError) return; else System.err.println("\nCode successfully run without error");
-    interpreter.interpret(statements);
+    if (hadError)
+     return;
+     else {
+      System.err.println("\t\n");
+      interpreter.interpret(statements);
+      System.err.println("\nCode successfully run without error");
+     }
     // System.out.println(new AstPrinter().print(expression));
     // For now, just print the tokens.
     // for (Token token : tokens) {

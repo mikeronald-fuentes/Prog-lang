@@ -24,7 +24,7 @@ class Parser {
     private Expr assignment() {
         Expr expr = equality();
     
-        if (match(EQUAL)) {
+        if (match(ASSIGN)) {
           Token equals = previous();
           Expr value = assignment();
     
@@ -211,14 +211,6 @@ class Parser {
         }
     }
 
-    // Expr parse() {
-    //     try {
-    //         return expression();
-    //     } catch (ParseError error) {
-    //         return null;
-    //     }
-    // }
-
     List<Stmt> parse() {
     List<Stmt> statements = new ArrayList<>();
     while (!isAtEnd()) {
@@ -229,7 +221,7 @@ class Parser {
   }
   private Stmt declaration() {
     try {
-      if (match(VARIABLE)) return varDeclaration();
+      if (match(INT)) return varDeclaration("INT");
 
       return statement();
     } catch (ParseError error) {
@@ -238,19 +230,22 @@ class Parser {
     }
   }
 
-  private Stmt varDeclaration() {
+  private Stmt varDeclaration(String type) {
     Token name = consume(IDENTIFIER, "Expect variable name.");
 
     Expr initializer = null;
-    if (match(EQUAL)) {
+    if (match(ASSIGN)) {
       initializer = expression();
     }
-
-    consume(SEMICOLON, "Expect ';' after variable declaration.");
+    
+    if(type.equals("INT")){
+        return new Stmt.Int(name, initializer);
+    }
     return new Stmt.Scan(name, initializer);
   }
+
   private Stmt statement() {
-    if (match(PRINT)) return printStatement();
+    if (match(DISPLAY) && match(COLON)) return displayStatement();
     if (match(BEGIN) && match(CODE)) {
         return new Stmt.Block(block());
     }
@@ -271,15 +266,14 @@ class Parser {
         return statements;
     }
 
-    private Stmt printStatement() {
+    private Stmt displayStatement() {
         Expr value = expression();
-        consume(SEMICOLON, "Expect ';' after value.");
         return new Stmt.Display(value);
     }
 
-  private Stmt expressionStatement() {
-    Expr expr = expression();
-    consume(SEMICOLON, "Expect ';' after expression.");
-    return new Stmt.Expression(expr);
-  }
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
+    }
 }
