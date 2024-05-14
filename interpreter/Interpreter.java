@@ -2,7 +2,19 @@ package interpreter;
 
 import static interpreter.TokenType.ADDITION;
 import static interpreter.TokenType.SUBTRACTION;
-
+import interpreter.Expr.Assign;
+import interpreter.Expr.Binary;
+import interpreter.Expr.Grouping;
+import interpreter.Expr.Literal;
+import interpreter.Expr.Unary;
+import interpreter.Expr.Variable;
+import interpreter.Stmt.Block;
+import interpreter.Stmt.Bool;
+import interpreter.Stmt.Char;
+import interpreter.Stmt.Display;
+import interpreter.Stmt.Float;
+import interpreter.Stmt.Int;
+import interpreter.Stmt.Scan;
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>,
@@ -96,6 +108,24 @@ class Interpreter implements Expr.Visitor<Object>,
         
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
+
+    @Override
+    public Void visitIntStmt(Int stmt) {
+        Object value = null;
+        if (stmt.intializer != null) {
+            value = evaluate(stmt.intializer);
+            if (!(value instanceof Integer)) {
+                throw new RuntimeError(stmt.name, "Input must be an Integer");
+            }
+        }
+
+        String Tokentype = "Integer";
+
+        environment.define(stmt.name.lexeme, value, Tokentype);
+        // System.out.println("var = " + stmt.initializer.accept(this));
+        return null;
+    }
+
     @Override
     public Object visitUnaryExpr(Expr.Unary expr) {
         Object right = evaluate(expr.right);
@@ -140,15 +170,17 @@ class Interpreter implements Expr.Visitor<Object>,
         Code.runtimeError(error);
         }
     }
+
     private void execute(Stmt stmt) {
         stmt.accept(this);
       }
 
-      @Override
+    @Override
     public Void visitBlockStmt(Stmt.Block stmt) {
         executeBlock(stmt.statements, new Environment(environment));
         return null;
     }
+
     void executeBlock(List<Stmt> statements, Environment environment) {
     Environment previous = this.environment;
     try {

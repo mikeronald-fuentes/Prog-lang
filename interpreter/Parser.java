@@ -21,6 +21,7 @@ class Parser {
     private Expr expression() {
         return assignment();
     }
+
     private Expr assignment() {
         Expr expr = equality();
     
@@ -192,18 +193,17 @@ class Parser {
         advance();
     
         while (!isAtEnd()) {
-          if (previous().type == SEMICOLON) return;
+          if (previous().type == CODE) return;
     
           switch (peek().type) {
-            case CLASS:
+            case INT:
+            // case TYPECHAR:
+            case BOOL:
+            case IF:
             case WHILE:
-            case PRINT:
-            case BEGIN:
-            case END:
-            case BEGIN_IF:
-            case END_IF:
             case SCAN:
             case DISPLAY:
+            case END:
               return;
           }
     
@@ -221,7 +221,7 @@ class Parser {
   }
   private Stmt declaration() {
     try {
-      if (match(INT)) return varDeclaration("INT");
+      if (match(INT)) return variableDeclaration("INT");
 
       return statement();
     } catch (ParseError error) {
@@ -230,7 +230,7 @@ class Parser {
     }
   }
 
-  private Stmt varDeclaration(String type) {
+  private Stmt variableDeclaration(String type) {
     Token name = consume(IDENTIFIER, "Expect variable name.");
 
     Expr initializer = null;
@@ -241,7 +241,7 @@ class Parser {
     if(type.equals("INT")){
         return new Stmt.Int(name, initializer);
     }
-    return new Stmt.Scan(name, initializer);
+    return null;
   }
 
   private Stmt statement() {
@@ -273,7 +273,6 @@ class Parser {
 
     private Stmt expressionStatement() {
         Expr expr = expression();
-        consume(SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
     }
 }
