@@ -219,16 +219,25 @@ class Parser {
     
     return statements; 
   }
-  private Stmt declaration() {
-    try {
-      if (match(INT)) return variableDeclaration("INT");
+    private Stmt declaration() {
+        try {
+            if (match(CHAR)) 
+                return variableDeclaration("CHAR");
+            if (match(STRING)) 
+                return variableDeclaration("STRING");
+            if (match(BOOL)) 
+                return variableDeclaration("BOOL");
+            if (match(INT)) 
+                return variableDeclaration("INT");
+            if (match(FLOAT)) 
+                return variableDeclaration("FLOAT");
 
-      return statement();
-    } catch (ParseError error) {
-      synchronize();
-      return null;
+            return statement();
+        } catch (ParseError error) {
+            synchronize();
+            return null;
+        }
     }
-  }
 
   private Stmt variableDeclaration(String type) {
     Token name = consume(IDENTIFIER, "Expect variable name.");
@@ -238,9 +247,17 @@ class Parser {
       initializer = expression();
     }
     
-    if(type.equals("INT")){
+    if(type.equals("CHAR"))
+        return new Stmt.Char(name, initializer);
+    if(type.equals("STRING"))
+        return new Stmt.String(name, initializer);
+    if(type.equals("BOOL"))
+        return new Stmt.Bool(name, initializer);
+    if(type.equals("INT"))
         return new Stmt.Int(name, initializer);
-    }
+    if(type.equals("FLOAT"))
+        return new Stmt.Float(name, initializer);
+
     return null;
   }
 
