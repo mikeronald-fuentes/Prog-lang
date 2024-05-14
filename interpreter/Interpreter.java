@@ -20,17 +20,17 @@ import java.util.List;
 class Interpreter implements Expr.Visitor<Object>,
                              Stmt.Visitor<Void> {
     private Environment environment = new Environment();
+
     @Override
     public Object visitLiteralExpr(Expr.Literal expr) {
         return expr.value;
     }
+
     @Override
     public Object visitGroupingExpr(Expr.Grouping expr) {
         return evaluate(expr.expression);
     }
-    private Object evaluate(Expr expr) {
-        return expr.accept(this);
-      }
+    
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt) {
         evaluate(stmt.expression);
@@ -42,6 +42,7 @@ class Interpreter implements Expr.Visitor<Object>,
         System.out.println(stringify(value));
         return null;
     }
+
     @Override
     public Void visitScanStmt(Stmt.Scan stmt) {
         Object value = null;
@@ -52,12 +53,14 @@ class Interpreter implements Expr.Visitor<Object>,
         environment.define(stmt.name.lexeme, value);
         return null;
     }
+
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
         Object value = evaluate(expr.value);
         environment.assign(expr.name, value);
         return value;
     }
+
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = evaluate(expr.left);
@@ -102,11 +105,6 @@ class Interpreter implements Expr.Visitor<Object>,
 
         // Unreachable.
         return null;
-    }
-    private void checkNumberOperands(Token operator, Object left, Object right) {
-        if (left instanceof Double && right instanceof Double) return;
-        
-        throw new RuntimeError(operator, "Operands must be numbers.");
     }
 
     @Override
@@ -188,19 +186,38 @@ class Interpreter implements Expr.Visitor<Object>,
         // Unreachable.
         return null;
     }
+
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
         return environment.get(expr.name);
     }
+    
+    @Override
+    public Void visitBlockStmt(Stmt.Block stmt) {
+        executeBlock(stmt.statements, new Environment(environment));
+        return null;
+    }
+    private Object evaluate(Expr expr) {
+        return expr.accept(this);
+    }
+
+    private void checkNumberOperands(Token operator, Object left, Object right) {
+        if (left instanceof Double && right instanceof Double) return;
+        
+        throw new RuntimeError(operator, "Operands must be numbers.");
+    }
+
     private void checkNumberOperand(Token operator, Object operand) {
         if (operand instanceof Double) return;
         throw new RuntimeError(operator, "Operand must be a number.");
-      }
+    }
+
     private boolean isTruthy(Object object) {
         if (object == null) return false;
         if (object instanceof Boolean) return (boolean)object;
         return true;
     }
+
     private boolean isEqual(Object a, Object b) {
         if (a == null && b == null) return true;
         if (a == null) return false;
@@ -220,26 +237,21 @@ class Interpreter implements Expr.Visitor<Object>,
 
     private void execute(Stmt stmt) {
         stmt.accept(this);
-      }
-
-    @Override
-    public Void visitBlockStmt(Stmt.Block stmt) {
-        executeBlock(stmt.statements, new Environment(environment));
-        return null;
     }
 
     void executeBlock(List<Stmt> statements, Environment environment) {
-    Environment previous = this.environment;
-    try {
-      this.environment = environment;
+        Environment previous = this.environment;
+        try {
+            this.environment = environment;
 
-      for (Stmt statement : statements) {
-        execute(statement);
-      }
-    } finally {
-      this.environment = previous;
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
     }
-  }
+
     private String stringify(Object object) {
         if (object == null) return "null";
     

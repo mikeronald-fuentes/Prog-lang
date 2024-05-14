@@ -98,7 +98,9 @@ class Scanner {
             break;
 
         default:
-        if (isDigit(c)) {
+        if (isAlphaNumeric(c)) {
+            identifier();
+        }else if (isDigit(c)) {
             number();
         }else if(isAlpha(c)) {
             identifier();
@@ -200,6 +202,9 @@ class Scanner {
     private void identifier() {
       while (isAlphaNumeric(peek())) advance();
 
+      if(isDigit(source.charAt(start))){
+        Code.error(line, "Variable must not start with a digit");
+      }
       String text = source.substring(start, current);
       TokenType type = keywords.get(text);
 

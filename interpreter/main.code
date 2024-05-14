@@ -1,7 +1,3 @@
-# this is a sample program in CODE
 BEGIN CODE
-# this is a sample program in CODE
-BOOL char
-DISPLAY: char
+	INT 9y
 END CODE
-# this is a sample program in CODE

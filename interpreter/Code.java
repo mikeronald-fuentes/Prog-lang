@@ -17,6 +17,7 @@ public class Code {
       System.out.println("Usage: jlox [script]");
       System.exit(64);
     } else if (args.length == 1) {
+      System.err.println("\t\n");
       runFile(args[0]);
     } else {
       runPrompt();
