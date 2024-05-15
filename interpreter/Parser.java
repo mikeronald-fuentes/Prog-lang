@@ -8,7 +8,7 @@ import static interpreter.TokenType.*;
 
 class Parser {
     private static class ParseError extends RuntimeException {}
-
+    private boolean inBlock = false;
     private final List<Token> tokens;
     // to point to the next token
     private int current = 0;
@@ -157,21 +157,22 @@ class Parser {
     private Expr primary() {
         if (match(FALSE)) return new Expr.Literal(false);
         if (match(TRUE)) return new Expr.Literal(true);
-        if (match(NULL)) new Expr.Literal(null);
+        if (match(NULL)) return new Expr.Literal(null);
     
-        if (match(NUMBER, STRING, MODULO)) {
-          return new Expr.Literal(previous().literal);
+        if (match(NUMBER, STRING)) {
+            return new Expr.Literal(previous().literal);
         }
         if (match(IDENTIFIER)) {
             return new Expr.Variable(previous());
-          }
+        }
         if (match(LEFT_PAREN)) {
-          Expr expr = expression();
-          consume(RIGHT_PAREN, "Expect ')' after expression.");
-          return new Expr.Grouping(expr);
+            Expr expr = expression();
+            consume(RIGHT_PAREN, "Expect ')' after expression.");
+            return new Expr.Grouping(expr);
         }
         throw error(peek(), "Expect expression.");
     }
+    
 
     // Job of parser 
     // 1. given valid tokens, produce corresponding syntax tree
@@ -200,6 +201,7 @@ class Parser {
             // case TYPECHAR:
             case NUMBER:
             case BOOL:
+            case COMMA:
             case FLOAT:
             case IF:
             case WHILE:
@@ -214,13 +216,14 @@ class Parser {
     }
 
     List<Stmt> parse() {
-    List<Stmt> statements = new ArrayList<>();
-    while (!isAtEnd()) {
-        statements.add(declaration());
-    }
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(declaration());
+        }
     
-    return statements; 
-  }
+        return statements; 
+    }
+
     private Stmt declaration() {
         try {
             if (match(CHAR)) 
@@ -233,53 +236,81 @@ class Parser {
                 return variableDeclaration("INT");
             if (match(FLOAT)) 
                 return variableDeclaration("FLOAT");
-
             return statement();
         } catch (ParseError error) {
             synchronize();
             return null;
         }
     }
-
-  private Stmt variableDeclaration(String type) {
-    Token name = consume(IDENTIFIER, "Expect variable name.");
-
-    Expr initializer = null;
-    if (match(ASSIGN)) {
-      initializer = expression();
-    }
     
-    if(type.equals("CHAR"))
-        return new Stmt.Char(name, initializer);
-    if(type.equals("STRING"))
-        return new Stmt.String(name, initializer);
-    if(type.equals("BOOL"))
-        return new Stmt.Bool(name, initializer);
-    if(type.equals("INT"))
-        return new Stmt.Int(name, initializer);
-    if(type.equals("FLOAT"))
-        return new Stmt.Float(name, initializer);
 
-    return null;
-  }
-
-  private Stmt statement() {
-    if (match(DISPLAY) && match(COLON)) return displayStatement();
-    if (match(BEGIN) && match(CODE)) {
-        return new Stmt.Block(block());
-    }
+    private Stmt variableDeclaration(String type) {
+        List<Stmt> declarations = new ArrayList<>();
+        Token name = consume(IDENTIFIER, "Expect variable name.");
+        Expr initializer = null;
     
-    return expressionStatement();
+        if (match(ASSIGN)) {
+            initializer = expression();
+        }
+    
+        declarations.add(createVariableStmt(type, name, initializer));
+    
+        while (match(COMMA)) {
+            name = consume(IDENTIFIER, "Expect variable name after comma.");
+            initializer = null;
+            if (match(ASSIGN)) {
+                initializer = expression();
+            }
+            declarations.add(createVariableStmt(type, name, initializer));
+        }
+    
+        if (declarations.size() == 1) {
+            return declarations.get(0);
+        } else {
+            return new Stmt.variableDeclaration(declarations);
+        }
+    }
+
+    private Stmt createVariableStmt(String type, Token name, Expr initializer) {
+        switch (type) {
+            case "CHAR":
+                return new Stmt.Char(name, initializer);
+            case "STRING":
+                return new Stmt.String(name, initializer);
+            case "BOOL":
+                return new Stmt.Bool(name, initializer);
+            case "INT":
+                return new Stmt.Int(name, initializer);
+            case "FLOAT":
+                return new Stmt.Float(name, initializer);
+            default:
+                throw new ParseError();
+        }
+    }
+    private Stmt statement() {
+        if (match(DISPLAY) && match(COLON)) return displayStatement();
+        if (match(BEGIN) && match(CODE)) {
+            return new Stmt.Block(block());
+        }
+        
+        return expressionStatement();
     }
 
     
     private List<Stmt> block() {
         List<Stmt> statements = new ArrayList<>();
 
-        while (!check(END) && !checkNext(CODE) && !isAtEnd()) {
-            statements.add(declaration());
+        if (!inBlock) {
+            while (!check(END) && !checkNext(CODE) && !isAtEnd()) {
+                inBlock = true;
+                statements.add(declaration());
+            }
+        } else {
+            System.out.println("asdsad");
+            Code.runtimeError(new RuntimeError(new Token(BEGIN, null, null, 2),"Unexpected input found after END CODE."));
+            return null;
         }
-
+        
         consume(END, "Expect END after block.");
         consume(CODE, "Expect CODE after END.");
         return statements;

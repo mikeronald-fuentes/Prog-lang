@@ -217,6 +217,15 @@ class Interpreter implements Expr.Visitor<Object>,
         executeBlock(stmt.statements, new Environment(environment));
         return null;
     }
+
+    @Override
+    public Void visitVariableDeclarationStmt(Stmt.variableDeclaration stmt) {
+        for (Stmt declaration : stmt.declarations) {
+            execute(declaration);
+        }
+        return null;
+    }
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }

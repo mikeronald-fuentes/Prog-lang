@@ -1,5 +1,8 @@
 BEGIN CODE
-	INT sum=0
-	sum = sum + 5
-	FLOAT ave	
+	INT x, z 
+	BOOL int="TRUE"
+	x=z=6
+	# this is a comment
+    DISPLAY: x
+    DISPLAY: z
 END CODE
