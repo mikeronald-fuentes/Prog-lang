@@ -120,7 +120,7 @@ class Parser {
     private Expr term() {
         Expr expr = factor();
     
-        while (match(SUBTRACTION, ADDITION)) {
+        while (match(SUBTRACTION, ADDITION, CONCATENATOR)) {
           Token operator = previous();
           Expr right = factor();
           expr = new Expr.Binary(expr, operator, right);

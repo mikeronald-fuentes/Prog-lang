@@ -83,16 +83,16 @@ class Interpreter implements Expr.Visitor<Object>,
             checkNumberOperands(expr.operator, left, right);
             return (double)left - (double)right;
         case ADDITION:
-            if (left instanceof Double && right instanceof Double) {
+            // if (left instanceof Double && right instanceof Double) {
             return (double)left + (double)right;
-            } 
+            // } 
 
-            if (left instanceof String && right instanceof String) {
-            return (String)left + (String)right;
-            }
+            // if (left instanceof String && right instanceof String) {
+            // return (String)left + (String)right;
+            // }
             
-            throw new RuntimeError(expr.operator,
-            "Operands must be two numbers or two strings.");
+            // throw new RuntimeError(expr.operator,
+            // "Operands must be two numbers or two strings.");
         case DIVISION:
             checkNumberOperands(expr.operator, left, right);
             return (double)left / (double)right;
@@ -104,7 +104,9 @@ class Interpreter implements Expr.Visitor<Object>,
         case MODULO: 
             checkNumberOperands(expr.operator, left, right);
             return (double)left % (double)right;
-            
+        case CONCATENATOR: 
+            if (left instanceof String && right instanceof String) 
+                return (String)left + (String)right;
         }
 
         // Unreachable.

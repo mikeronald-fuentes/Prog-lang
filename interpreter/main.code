@@ -1,8 +1,5 @@
 BEGIN CODE
-	INT x, z 
-	BOOL int="TRUE"
-	x=z=6
-	# this is a comment
-    DISPLAY: x
+	STRING x = "omcm", z = "omcm"
+    DISPLAY: x & z
     DISPLAY: z
 END CODE
