@@ -107,6 +107,8 @@ class Interpreter implements Expr.Visitor<Object>,
         case CONCATENATOR: 
             if (left instanceof String && right instanceof String) 
                 return (String)left + (String)right;
+
+            throw new RuntimeError(expr.operator, "Operands must be two strings.");
         }
 
         // Unreachable.

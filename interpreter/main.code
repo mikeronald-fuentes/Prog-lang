@@ -1,5 +1,6 @@
 BEGIN CODE
-	STRING x = "omcm", z = "omcm"
+	STRING x = "omcm"
+    INT z = 45 
     DISPLAY: x & z
     DISPLAY: z
 END CODE
