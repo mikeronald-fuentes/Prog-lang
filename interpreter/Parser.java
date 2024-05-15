@@ -159,7 +159,7 @@ class Parser {
         if (match(TRUE)) return new Expr.Literal(true);
         if (match(NULL)) return new Expr.Literal(null);
     
-        if (match(NUMBER, STRING)) {
+        if (match(NUMBER, STRING, CHAR)) {
             return new Expr.Literal(previous().literal);
         }
         if (match(IDENTIFIER)) {
@@ -198,7 +198,7 @@ class Parser {
     
           switch (peek().type) {
             case INT:
-            // case TYPECHAR:
+            case CHAR:
             case NUMBER:
             case BOOL:
             case COMMA:

@@ -105,10 +105,8 @@ class Interpreter implements Expr.Visitor<Object>,
             checkNumberOperands(expr.operator, left, right);
             return (double)left % (double)right;
         case CONCATENATOR: 
-            if (left instanceof String && right instanceof String) 
-                return (String)left + (String)right;
+            return stringify(left) + stringify(right);
 
-            throw new RuntimeError(expr.operator, "Operands must be two strings.");
         }
 
         // Unreachable.
