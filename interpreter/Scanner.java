@@ -98,9 +98,7 @@ class Scanner {
             break;
 
         default:
-        if (isAlphaNumeric(c)) {
-            identifier();
-        }else if (isDigit(c)) {
+        if (isDigit(c)) {
             number();
         }else if(isAlpha(c)) {
             identifier();
@@ -157,7 +155,13 @@ class Scanner {
         advance();
     
         String value = source.substring(start + 1, current - 1);
-        addToken(STRING, value);
+        if(value.equals("TRUE")) {
+          addToken(TRUE, Boolean.parseBoolean(value));
+        } else if(value.equals("FALSE")) {
+          addToken(FALSE, Boolean.parseBoolean(value));
+        } else {
+          addToken(STRING, value);
+        }
       }
     
     private void charLiteral() {
@@ -183,15 +187,21 @@ class Scanner {
 
     private void number() {
         while (isDigit(peek())) advance();
-    
+
         if (peek() == '.' && isDigit(peekNext())) {
+
+        
           advance();
     
           while (isDigit(peek())) advance();
-        }
+        
     
-        addToken(NUMBER,
-            Double.parseDouble(source.substring(start, current)));
+        // return;
+      } else if (isAlpha(peek())){
+        Code.error(line, "Variable must not start with a digit");
+        return;
+      }
+      addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
 
     private char peekNext() {
@@ -202,13 +212,12 @@ class Scanner {
     private void identifier() {
       while (isAlphaNumeric(peek())) advance();
 
-      if(isDigit(source.charAt(start))){
-        Code.error(line, "Variable must not start with a digit");
-      }
       String text = source.substring(start, current);
       TokenType type = keywords.get(text);
 
-      if (type == null) type = IDENTIFIER;
+      if (type == null) 
+        type = IDENTIFIER;
+
       addToken(type);
     }
 

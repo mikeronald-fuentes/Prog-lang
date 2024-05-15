@@ -1,3 +1,5 @@
 BEGIN CODE
-	INT 9y
+	INT sum=0
+	sum = sum + 5
+	FLOAT ave	
 END CODE

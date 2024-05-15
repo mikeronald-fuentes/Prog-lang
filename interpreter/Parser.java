@@ -133,7 +133,7 @@ class Parser {
     private Expr factor() {
         Expr expr = unary();
     
-        while (match(DIVISION, MULTIPLY)) {
+        while (match(DIVISION, MULTIPLY, MODULO)) {
           Token operator = previous();
           Expr right = unary();
           expr = new Expr.Binary(expr, operator, right);
@@ -157,9 +157,9 @@ class Parser {
     private Expr primary() {
         if (match(FALSE)) return new Expr.Literal(false);
         if (match(TRUE)) return new Expr.Literal(true);
-        if (match(NULL)) return new Expr.Literal(null);
+        if (match(NULL)) new Expr.Literal(null);
     
-        if (match(NUMBER, STRING)) {
+        if (match(NUMBER, STRING, MODULO)) {
           return new Expr.Literal(previous().literal);
         }
         if (match(IDENTIFIER)) {
@@ -198,7 +198,9 @@ class Parser {
           switch (peek().type) {
             case INT:
             // case TYPECHAR:
+            case NUMBER:
             case BOOL:
+            case FLOAT:
             case IF:
             case WHILE:
             case SCAN:
@@ -266,7 +268,7 @@ class Parser {
     if (match(BEGIN) && match(CODE)) {
         return new Stmt.Block(block());
     }
-    if (match(LEFT_BRACE)) return new Stmt.Block(block());
+    
     return expressionStatement();
     }
 
@@ -292,4 +294,6 @@ class Parser {
         Expr expr = expression();
         return new Stmt.Expression(expr);
     }
+
+    
 }

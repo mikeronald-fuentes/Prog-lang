@@ -27,8 +27,8 @@ public class Code {
   private static void runFile(String path) throws IOException {
     byte[] bytes = Files.readAllBytes(Paths.get(path));
     run(new String(bytes, Charset.defaultCharset()));
-    if (hadError) System.exit(65);
-    if (hadRuntimeError) System.exit(70);
+    // if (hadError) System.exit(65);
+    // if (hadRuntimeError) System.exit(70);
   }
 
   private static void runPrompt() throws IOException {
@@ -51,18 +51,19 @@ public class Code {
     // Expr expression = parser.parse();
     List<Stmt> statements = parser.parse();
     // Stop if there was a syntax error.
-    if (hadError)
+    if (hadError || hadRuntimeError)
      return;
      else {
       System.err.println("\t\n");
       interpreter.interpret(statements);
-      System.err.println("\nCode successfully run without error");
+      if (!hadRuntimeError && !hadError)
+        System.err.println("\nCode successfully run without error");
      }
     // System.out.println(new AstPrinter().print(expression));
     // For now, just print the tokens.
-    // for (Token token : tokens) {
-    //   System.out.println(token);
-    // }
+    for (Token token : tokens) {
+      System.out.println(token);
+    }
   }
 
   static void error(int line, String message) {
@@ -78,7 +79,7 @@ public class Code {
   }
 
   static void runtimeError(RuntimeError error) {
-    System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
+    System.err.println("[line " + error.token.line + "] Error: " + error.getMessage());
     hadRuntimeError = true;
   }
 
