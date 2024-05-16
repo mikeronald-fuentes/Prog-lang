@@ -70,7 +70,10 @@ class Parser {
         if (isAtEnd()) return false;
         return peek().type == type;
     }
-
+    private boolean checkNewline(TokenType type) {
+        if (isAtEnd()) return false;
+        return previous().type == type;
+    }
     private boolean checkNext(TokenType type) {
         if (isAtEnd())
             return false;
@@ -160,8 +163,16 @@ class Parser {
         if (match(NULL)) return new Expr.Literal(null);
     
         if (match(NUMBER, STRING, CHAR)) {
+            // System.out.println(previous().literal);
             return new Expr.Literal(previous().literal);
         }
+
+        if (match(ESCAPECODE)) {
+            // Handle escape code interpretation
+            Token objectToken = previous();
+            return new Expr.Literal(objectToken.literal);
+        }
+
         if (match(IDENTIFIER)) {
             return new Expr.Variable(previous());
         }
@@ -170,10 +181,24 @@ class Parser {
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
         }
-        throw error(peek(), "Expect expression.");
+        return null;
+        // throw error(peek(), "Expect expression.");
     }
     
-
+    // private Expr interpretEscapeCode(String code) {
+    //     // Interpret the content of the escape code
+    //     // For example, perform a replacement or execute some action
+    //     // Here's a placeholder implementation:
+    //     switch (code) {
+    //         case "CONCATENATOR":
+    //             return new Expr.Newline(); // Example interpretation
+    //         case "tab":
+    //             return new Expr.Tab(); // Example interpretation
+    //         default:
+    //             // Handle unrecognized escape codes
+    //             throw new ParseError("Unrecognized escape code: " + code);
+    //     }
+    // }
     // Job of parser 
     // 1. given valid tokens, produce corresponding syntax tree
     // 2. given an invalid tokens, detect any errors and tell users about it
@@ -183,7 +208,11 @@ class Parser {
     
         throw error(peek(), message);
     }
-
+    private Token consumeNewLine(TokenType type, String message) {
+        if (checkNewline(type)) return advance();
+    
+        throw error(peek(), message);
+    }
     private ParseError error(Token token, String message) {
         Code.error(token, message);
         return new ParseError();
@@ -208,6 +237,7 @@ class Parser {
             case SCAN:
             case DISPLAY:
             case END:
+            case ESCAPECODE:
               return;
           }
     
@@ -220,7 +250,6 @@ class Parser {
         while (!isAtEnd()) {
             statements.add(declaration());
         }
-    
         return statements; 
     }
 
@@ -236,6 +265,7 @@ class Parser {
                 return variableDeclaration("INT");
             if (match(FLOAT)) 
                 return variableDeclaration("FLOAT");
+            
             return statement();
         } catch (ParseError error) {
             synchronize();
@@ -243,6 +273,10 @@ class Parser {
         }
     }
     
+    private Stmt newLineStatement() {  
+        consumeNewLine(NEW_LINE, "Expected '$' for new line.");
+        return new Stmt.NewLine();
+    }
 
     private Stmt variableDeclaration(String type) {
         List<Stmt> declarations = new ArrayList<>();
@@ -287,12 +321,16 @@ class Parser {
                 throw new ParseError();
         }
     }
+
     private Stmt statement() {
         if (match(DISPLAY) && match(COLON)) return displayStatement();
         if (match(BEGIN) && match(CODE)) {
             return new Stmt.Block(block());
         }
         
+        if (match(NEW_LINE)) {
+            return newLineStatement();
+        }
         return expressionStatement();
     }
 
@@ -326,5 +364,6 @@ class Parser {
         return new Stmt.Expression(expr);
     }
 
+    
     
 }

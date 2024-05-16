@@ -15,6 +15,7 @@ import interpreter.Stmt.Display;
 import interpreter.Stmt.Float;
 import interpreter.Stmt.Int;
 import interpreter.Stmt.Scan;
+import interpreter.Stmt.NewLine;
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>,
@@ -106,6 +107,8 @@ class Interpreter implements Expr.Visitor<Object>,
             return (double)left % (double)right;
         case CONCATENATOR: 
             return stringify(left) + stringify(right);
+        // case NEW_LINE:
+        //     return (stringify(left) + "\n" + stringify(right));
 
         }
 
@@ -225,6 +228,12 @@ class Interpreter implements Expr.Visitor<Object>,
         for (Stmt declaration : stmt.declarations) {
             execute(declaration);
         }
+        return null;
+    }
+
+    @Override
+    public Void visitNewLineStmt(NewLine stmt) { 
+        System.out.println(); 
         return null;
     }
 

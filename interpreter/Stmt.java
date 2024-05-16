@@ -14,6 +14,7 @@ abstract class Stmt {
       R visitStringStmt(String stmt);
       R visitBoolStmt(Bool stmt);
       R visitVariableDeclarationStmt(variableDeclaration stmt);
+      R visitNewLineStmt(NewLine stmt);
     }
     static class Block extends Stmt {
         Block(List<Stmt> statements) {
@@ -147,6 +148,13 @@ abstract class Stmt {
         }
 
         final List<Stmt> declarations;
+    }
+
+    static class NewLine extends Stmt {  // Add this class
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitNewLineStmt(this);
+        }
     }
     abstract <R> R accept(Visitor<R> visitor);
 }

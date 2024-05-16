@@ -53,7 +53,7 @@ class Scanner {
         switch (c) {
         case '(': addToken(LEFT_PAREN); break;
         case ')': addToken(RIGHT_PAREN); break;
-        case '[': addToken(LEFT_ESCAPE); break;
+        case '[': consumeEscapeCode(); break;
         case '-': addToken(SUBTRACTION); break;
         case '+': addToken(ADDITION); break;
         case '*': addToken(MULTIPLY); break; 
@@ -180,7 +180,34 @@ class Scanner {
       char value = source.charAt(start + 1);
       addToken(CHAR, value);
     }
+
+    private void consumeEscapeCode() {
+      while(peek() != ']' && !isAtEnd()) {
+        if(peek() == '\n') return;
+        if(peek() == '[') {
+          Code.error(line, "Invalid Escape Sequence: Too short."); 
+          return;
+        }
+        advance();
+    }
+
+    if (current - start != 2) {
+      Code.error(line, "Invalid Escape Sequence: Too short.");
+      return;
+    }
+
     
+    advance();
+
+    char value = source.charAt(start+1);
+    System.out.println(value);
+    if(value == '&') {
+        addToken(ESCAPECODE, value);
+        return;
+    }
+    Code.error(line, "Invalid Escape Character: '" + value + "'");
+  }
+
     private boolean isDigit(char c) {
     return c >= '0' && c <= '9';
     } 
