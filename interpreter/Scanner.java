@@ -184,29 +184,23 @@ class Scanner {
     private void consumeEscapeCode() {
       while(peek() != ']' && !isAtEnd()) {
         if(peek() == '\n') return;
-        if(peek() == '[') {
-          Code.error(line, "Invalid Escape Sequence: Too short."); 
-          return;
-        }
-        advance();
-    }
+          advance();
+      }
 
-    if (current - start != 2) {
-      Code.error(line, "Invalid Escape Sequence: Too short.");
-      return;
-    }
-
-    
-    advance();
-
-    char value = source.charAt(start+1);
-    System.out.println(value);
-    if(value == '&') {
-        addToken(ESCAPECODE, value);
+      if (!(current - start == 2)) {
+        Code.error(line, "Invalid Escape Sequence: Too short.");
         return;
+      }
+
+      advance();
+
+      char value = source.charAt(start);
+      if(value == '[') {
+          addToken(CHAR, source.charAt(start+1));
+          return;
+      }
+      Code.error(line, "Invalid Escape Character: '" + value + "'");
     }
-    Code.error(line, "Invalid Escape Character: '" + value + "'");
-  }
 
     private boolean isDigit(char c) {
     return c >= '0' && c <= '9';

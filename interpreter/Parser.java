@@ -176,6 +176,7 @@ class Parser {
         if (match(IDENTIFIER)) {
             return new Expr.Variable(previous());
         }
+
         if (match(LEFT_PAREN)) {
             Expr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
@@ -329,6 +330,8 @@ class Parser {
         }
         
         if (match(NEW_LINE)) {
+            System.out.println(peek());
+            System.out.println(previous());
             return newLineStatement();
         }
         return expressionStatement();

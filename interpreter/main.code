@@ -1,6 +1,4 @@
 BEGIN CODE
-	INT a, b
-	a=100
-	b=200 
-	DISPLAY:  [&] & a & [&] & b & [&]
+
+DISPLAY: "This is the " & [$] & " end of a line."
 END CODE
