@@ -1,6 +1,4 @@
 BEGIN CODE
-	FLOAT sum = 10
-	FLOAT x = 5
-	
-	DISPLAY: [&] & sum & [&]	
+END CODE
+BEGIN CODE
 END CODE

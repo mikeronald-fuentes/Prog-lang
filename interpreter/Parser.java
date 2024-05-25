@@ -12,7 +12,7 @@ class Parser {
     private final List<Token> tokens;
     // to point to the next token
     private int current = 0;
-
+    private boolean block = false;
     Parser(List<Token> tokens) {
         this.tokens = tokens;
     }
@@ -308,8 +308,11 @@ class Parser {
 
     private Stmt statement() {
         if (match(DISPLAY) && match(COLON)) return displayStatement();
-        if (match(BEGIN) && match(CODE)) {
+        if (match(BEGIN) && match(CODE) && !block) {
+            block = true;
             return new Stmt.Block(block());
+        } else {
+            Code.error(current, "Unexpected input found after END CODE.");
         }
         
         if (match(NEW_LINE)) {
