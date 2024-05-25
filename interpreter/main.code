@@ -1,4 +1,6 @@
 BEGIN CODE
-
-DISPLAY: "This is the " & [$] & " end of a line."
+	FLOAT sum = 10
+	FLOAT x = 5
+	
+	DISPLAY: [&] & sum & [&]	
 END CODE

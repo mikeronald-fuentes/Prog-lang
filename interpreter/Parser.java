@@ -28,7 +28,7 @@ class Parser {
         if (match(ASSIGN)) {
           Token equals = previous();
           Expr value = assignment();
-    
+        
           if (expr instanceof Expr.Variable) {
             Token name = ((Expr.Variable)expr).name;
             return new Expr.Assign(name, value);
@@ -182,27 +182,10 @@ class Parser {
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
         }
-        return null;
-        // throw error(peek(), "Expect expression.");
+        // return null;
+        throw error(peek(), "Expect expression.");
     }
     
-    // private Expr interpretEscapeCode(String code) {
-    //     // Interpret the content of the escape code
-    //     // For example, perform a replacement or execute some action
-    //     // Here's a placeholder implementation:
-    //     switch (code) {
-    //         case "CONCATENATOR":
-    //             return new Expr.Newline(); // Example interpretation
-    //         case "tab":
-    //             return new Expr.Tab(); // Example interpretation
-    //         default:
-    //             // Handle unrecognized escape codes
-    //             throw new ParseError("Unrecognized escape code: " + code);
-    //     }
-    // }
-    // Job of parser 
-    // 1. given valid tokens, produce corresponding syntax tree
-    // 2. given an invalid tokens, detect any errors and tell users about it
 
     private Token consume(TokenType type, String message) {
         if (check(type)) return advance();
@@ -210,7 +193,7 @@ class Parser {
         throw error(peek(), message);
     }
     private Token consumeNewLine(TokenType type, String message) {
-        if (checkNewline(type)) return advance();
+        if (checkNewline(type)) {System.out.println(type); return advance();}
     
         throw error(peek(), message);
     }

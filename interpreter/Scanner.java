@@ -184,7 +184,7 @@ class Scanner {
     private void consumeEscapeCode() {
       while(peek() != ']' && !isAtEnd()) {
         if(peek() == '\n') return;
-          advance();
+        advance();
       }
 
       if (!(current - start == 2)) {
@@ -196,7 +196,7 @@ class Scanner {
 
       char value = source.charAt(start);
       if(value == '[') {
-          addToken(CHAR, source.charAt(start+1));
+          addToken(ESCAPECODE, source.charAt(start+1));
           return;
       }
       Code.error(line, "Invalid Escape Character: '" + value + "'");
@@ -219,7 +219,7 @@ class Scanner {
     
         // return;
       } else if (isAlpha(peek())){
-        Code.error(line, "Variable must not start with a digit");
+        Code.error(line, "Invalid variable name");
         return;
       }
       addToken(NUMBER, Double.parseDouble(source.substring(start, current)));

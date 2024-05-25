@@ -51,7 +51,7 @@ class Interpreter implements Expr.Visitor<Object>,
         value = evaluate(stmt.initializer);
         }
 
-        environment.define(stmt.name.lexeme, value);
+        environment.define(stmt.name, value);
         return null;
     }
 
@@ -107,8 +107,8 @@ class Interpreter implements Expr.Visitor<Object>,
             return (double)left % (double)right;
         case CONCATENATOR: 
             return stringify(left) + stringify(right);
-        // case NEW_LINE:
-        //     return (stringify(left) + "\n" + stringify(right));
+        case NEW_LINE:
+            return (stringify(left) + "\n" + stringify(right));
 
         }
 
@@ -128,7 +128,7 @@ class Interpreter implements Expr.Visitor<Object>,
 
         String Tokentype = "Integer";
 
-        environment.define(stmt.name.lexeme, value, Tokentype);
+        environment.define(stmt.name, value, Tokentype);
         return null;
     }
 
@@ -144,7 +144,7 @@ class Interpreter implements Expr.Visitor<Object>,
 
         String Tokentype = "Character";
 
-        environment.define(stmt.name.lexeme, value, Tokentype);
+        environment.define(stmt.name, value, Tokentype);
         return null;
     }
 
@@ -160,7 +160,7 @@ class Interpreter implements Expr.Visitor<Object>,
 
         String Tokentype = "String";
 
-        environment.define(stmt.name.lexeme, value, Tokentype);
+        environment.define(stmt.name, value, Tokentype);
         return null;
     }
 
@@ -171,12 +171,12 @@ class Interpreter implements Expr.Visitor<Object>,
             value = evaluate(stmt.initializer);
             if (!(value instanceof Boolean)) {
                 throw new RuntimeError(stmt.name, "Input must be an Boolean");
-            }
+            } 
         }
 
         String Tokentype = "Boolean";
 
-        environment.define(stmt.name.lexeme, value, Tokentype);
+        environment.define(stmt.name, value, Tokentype);
         return null;
     }
 
@@ -185,14 +185,14 @@ class Interpreter implements Expr.Visitor<Object>,
         Object value = null;
         if (stmt.initializer != null) {
             value = evaluate(stmt.initializer);
-            if (!(value instanceof Float)) {
+            if (!(value instanceof Double)) {
                 throw new RuntimeError(stmt.name, "Input must be an Float");
             }
         }
-
+        System.out.println(value);
         String Tokentype = "Float";
 
-        environment.define(stmt.name.lexeme, value, Tokentype);
+        environment.define(stmt.name, value, Tokentype);
         return null;
     }
     

@@ -37,12 +37,15 @@ class Environment {
         throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
     }
 
-    void define(String name, Object value) {
-        values.put(name, value);
+    void define(Token name, Object value) {
+        if (values.containsKey(name.lexeme)){
+            throw new RuntimeError(name, "Undefined variable '" + name + "'.");
+        }
+        values.put(name.lexeme, value);
     }
 
-    void define(String name, Object value, String token_type) {
-        values.put(name, value);
-        token.put(name, token_type);
+    void define(Token name, Object value, String token_type) {
+        values.put(name.lexeme, value);
+        token.put(name.lexeme, token_type);
     }
 }
