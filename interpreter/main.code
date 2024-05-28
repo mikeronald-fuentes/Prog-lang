@@ -1,4 +1,6 @@
 BEGIN CODE
-END CODE
-BEGIN CODE
+    FLOAT sum = 10
+    FLOAT x = 12
+    sum = sum + x
+    DISPLAY: [[] & sum & [&]
 END CODE

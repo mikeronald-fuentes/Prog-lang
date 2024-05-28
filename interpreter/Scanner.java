@@ -182,14 +182,20 @@ class Scanner {
     }
 
     private void consumeEscapeCode() {
-      while(peek() != ']' && !isAtEnd()) {
+      while(((peek() == ']' && peekNext() == ']') || peek() != ']') && !isAtEnd()) {
         if(peek() == '\n') return;
         advance();
       }
 
       if (!(current - start == 2)) {
-        Code.error(line, "Invalid Escape Sequence: Too short.");
-        return;
+        if(current - start < 2){
+          Code.error(line, "Expected Escape Code between [ ]");
+          return;
+        }
+        else{
+          Code.error(line, "Expected One character between [ ]");
+          return;
+        }
       }
 
       advance();

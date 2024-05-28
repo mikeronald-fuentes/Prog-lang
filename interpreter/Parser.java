@@ -308,13 +308,10 @@ class Parser {
 
     private Stmt statement() {
         if (match(DISPLAY) && match(COLON)) return displayStatement();
-        if (match(BEGIN) && match(CODE) && !block) {
-            block = true;
+        if (match(BEGIN) && match(CODE)) {
+            
             return new Stmt.Block(block());
-        } else {
-            Code.error(current, "Unexpected input found after END CODE.");
-        }
-        
+        } 
         if (match(NEW_LINE)) {
             System.out.println(peek());
             System.out.println(previous());
@@ -327,15 +324,9 @@ class Parser {
     private List<Stmt> block() {
         List<Stmt> statements = new ArrayList<>();
 
-        if (!inBlock) {
-            while (!check(END) && !checkNext(CODE) && !isAtEnd()) {
-                inBlock = true;
-                statements.add(declaration());
-            }
-        } else {
-            System.out.println("asdsad");
-            Code.runtimeError(new RuntimeError(new Token(BEGIN, null, null, 2),"Unexpected input found after END CODE."));
-            return null;
+        while (!check(END) && !checkNext(CODE) && !isAtEnd()) {
+            inBlock = true;
+            statements.add(declaration());
         }
         
         consume(END, "Expect END after block.");
