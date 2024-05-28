@@ -51,18 +51,15 @@ class Interpreter implements Expr.Visitor<Object>,
 
     private Object scanInput() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter: ");
         String scanned = reader.readLine().trim();
     
-        Object value = tryParse(scanned, Integer::parseInt);
-        if (value != null) return value;
-    
-        value = tryParse(scanned, Double::parseDouble);
+        Object value = tryParse(scanned, Double::parseDouble);
         if (value != null) return value;
     
         if (scanned.length() == 1) {
             return scanned.charAt(0);
         }
-    
         return scanned;
     }
     
@@ -100,7 +97,7 @@ class Interpreter implements Expr.Visitor<Object>,
                         }
                         break;
                     case "Integer":
-                        if (!(scannedValue instanceof Integer)) {
+                        if (!(scannedValue instanceof Double)) {
                             throw new RuntimeError(stmt.name, "Input must be an Integer");
                         }
                         break;

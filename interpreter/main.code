@@ -1,7 +1,7 @@
 BEGIN CODE
-    FLOAT sum = 10
-    FLOAT x
-    SCAN: x
-    sum = sum + x
-    DISPLAY: [[] & sum & [[]
+	STRING x, y, z 
+	SCAN: x
+	SCAN: y
+	z = x & y
+	DISPLAY: z
 END CODE
