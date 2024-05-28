@@ -27,8 +27,8 @@ public class Code {
   private static void runFile(String path) throws IOException {
     byte[] bytes = Files.readAllBytes(Paths.get(path));
     run(new String(bytes, Charset.defaultCharset()));
-    // if (hadError) System.exit(65);
-    // if (hadRuntimeError) System.exit(70);
+    if (hadError) System.exit(65);
+    if (hadRuntimeError) System.exit(70);
   }
 
   private static void runPrompt() throws IOException {
@@ -61,9 +61,9 @@ public class Code {
      }
     // System.out.println(new AstPrinter().print(expression));
     // For now, just print the tokens.
-    for (Token token : tokens) {
-      System.out.println(token);
-    }
+    // for (Token token : tokens) {
+    //   System.out.println(token);
+    // }
   }
 
   static void error(int line, String message) {

@@ -16,6 +16,10 @@ import interpreter.Stmt.Float;
 import interpreter.Stmt.Int;
 import interpreter.Stmt.Scan;
 import interpreter.Stmt.NewLine;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>,
@@ -40,20 +44,94 @@ class Interpreter implements Expr.Visitor<Object>,
     @Override
     public Void visitDisplayStmt(Stmt.Display stmt) {
         Object value = evaluate(stmt.expression);
+        System.out.println();
         System.out.println(stringify(value));
         return null;
     }
 
+    private Object scanInput() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String scanned = reader.readLine().trim();
+    
+        Object value = tryParse(scanned, Integer::parseInt);
+        if (value != null) return value;
+    
+        value = tryParse(scanned, Double::parseDouble);
+        if (value != null) return value;
+    
+        if (scanned.length() == 1) {
+            return scanned.charAt(0);
+        }
+    
+        return scanned;
+    }
+    
+    private <T> T tryParse(String input, Parser<T> parser) {
+        try {
+            return parser.parse(input);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+    
+    @FunctionalInterface
+    interface Parser<T> {
+        T parse(String input) throws NumberFormatException;
+    }
+    
     @Override
     public Void visitScanStmt(Stmt.Scan stmt) {
-        Object value = null;
-        if (stmt.initializer != null) {
-        value = evaluate(stmt.initializer);
-        }
+        try {
+            Object scannedValue = scanInput();
+            String tokenType = environment.getTokenType(stmt.name.lexeme);
 
-        environment.define(stmt.name, value);
-        return null;
+            if (tokenType != null) {
+                switch (tokenType) {
+                    case "Boolean":
+                        if (scannedValue instanceof String) {
+                            String boolString = ((String) scannedValue);
+                            if (boolString.equals("TRUE")) {
+                                scannedValue = true;
+                            } else if (boolString.equals("FALSE")) {
+                                scannedValue = false;
+                            } else {
+                                throw new RuntimeError(stmt.name, "Input must be a Boolean");
+                            }
+                        }
+                        break;
+                    case "Integer":
+                        if (!(scannedValue instanceof Integer)) {
+                            throw new RuntimeError(stmt.name, "Input must be an Integer");
+                        }
+                        break;
+                    case "Float":
+                        if (!(scannedValue instanceof Double)) {
+                            throw new RuntimeError(stmt.name, "Input must be a Float");
+                        }
+                        break;
+                    case "Character":
+                        if (!(scannedValue instanceof Character)) {
+                            throw new RuntimeError(stmt.name, "Input must be a Character");
+                        }
+                        break;
+                    case "String":
+                        if (!(scannedValue instanceof String)) {
+                            throw new RuntimeError(stmt.name, "Input must be a String");
+                        }
+                        break;
+                    default:
+                        throw new RuntimeError(stmt.name, "Unknown variable type '" + tokenType + "'");
+                }
+            }
+
+            environment.assign(stmt.name, scannedValue);
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeError(stmt.name, "Error reading input");
+        }
     }
+
 
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
@@ -84,16 +162,8 @@ class Interpreter implements Expr.Visitor<Object>,
             checkNumberOperands(expr.operator, left, right);
             return (double)left - (double)right;
         case ADDITION:
-            // if (left instanceof Double && right instanceof Double) {
+            checkNumberOperands(expr.operator, left, right);
             return (double)left + (double)right;
-            // } 
-
-            // if (left instanceof String && right instanceof String) {
-            // return (String)left + (String)right;
-            // }
-            
-            // throw new RuntimeError(expr.operator,
-            // "Operands must be two numbers or two strings.");
         case DIVISION:
             checkNumberOperands(expr.operator, left, right);
             return (double)left / (double)right;
@@ -109,10 +179,8 @@ class Interpreter implements Expr.Visitor<Object>,
             return stringify(left) + stringify(right);
         case NEW_LINE:
             return (stringify(left) + "\n" + stringify(right));
-
         }
 
-        // Unreachable.
         return null;
     }
 
@@ -189,7 +257,6 @@ class Interpreter implements Expr.Visitor<Object>,
                 throw new RuntimeError(stmt.name, "Input must be an Float");
             }
         }
-        System.out.println(value);
         String Tokentype = "Float";
 
         environment.define(stmt.name, value, Tokentype);
@@ -208,7 +275,6 @@ class Interpreter implements Expr.Visitor<Object>,
             return -(double)right;
         }
 
-        // Unreachable.
         return null;
     }
 

@@ -312,6 +312,7 @@ class Parser {
             
             return new Stmt.Block(block());
         } 
+        if (match(SCAN) && match(COLON)) return scanStatement();
         if (match(NEW_LINE)) {
             System.out.println(peek());
             System.out.println(previous());
@@ -320,7 +321,6 @@ class Parser {
         return expressionStatement();
     }
 
-    
     private List<Stmt> block() {
         List<Stmt> statements = new ArrayList<>();
 
@@ -339,11 +339,13 @@ class Parser {
         return new Stmt.Display(value);
     }
 
+    private Stmt scanStatement() {
+        Token name = consume(IDENTIFIER, "Expect variable name after 'scan'.");
+        return new Stmt.Scan(name, null);
+    }
+
     private Stmt expressionStatement() {
         Expr expr = expression();
         return new Stmt.Expression(expr);
     }
-
-    
-    
 }

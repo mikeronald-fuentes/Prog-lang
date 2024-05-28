@@ -25,6 +25,16 @@ class Environment {
             "Undefined variable '" + name.lexeme + "'.");
     }
 
+    String getTokenType(String name) {
+        if (token.containsKey(name)) {
+            return token.get(name);
+        }
+        if (enclosing != null) {
+            return enclosing.getTokenType(name);
+        }
+        return null;
+    }
+    
     void assign(Token name, Object value) {
         if (values.containsKey(name.lexeme)) {
             values.put(name.lexeme, value);

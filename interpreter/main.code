@@ -1,6 +1,7 @@
 BEGIN CODE
     FLOAT sum = 10
-    FLOAT x = 12
+    FLOAT x
+    SCAN: x
     sum = sum + x
-    DISPLAY: [[] & sum & [&]
+    DISPLAY: [[] & sum & [[]
 END CODE
