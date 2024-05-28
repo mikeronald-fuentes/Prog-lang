@@ -53,7 +53,12 @@ class Interpreter implements Expr.Visitor<Object>,
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Enter: ");
         String scanned = reader.readLine().trim();
-    
+        
+        if (scanned.equalsIgnoreCase("TRUE") || scanned.equalsIgnoreCase("FALSE")) {
+            System.out.println("omcm");
+            return Boolean.parseBoolean(scanned);
+        }
+
         Object value = tryParse(scanned, Double::parseDouble);
         if (value != null) return value;
     
@@ -85,34 +90,37 @@ class Interpreter implements Expr.Visitor<Object>,
             if (tokenType != null) {
                 switch (tokenType) {
                     case "Boolean":
-                        if (scannedValue instanceof String) {
-                            String boolString = ((String) scannedValue);
-                            if (boolString.equals("TRUE")) {
-                                scannedValue = true;
-                            } else if (boolString.equals("FALSE")) {
-                                scannedValue = false;
-                            } else {
-                                throw new RuntimeError(stmt.name, "Input must be a Boolean");
-                            }
+                        if (scannedValue instanceof Boolean) {
+                            environment.assign(stmt.name, scannedValue);
+                        } else {
+                            throw new RuntimeError(stmt.name, "Input must be a Boolean");
                         }
                         break;
                     case "Integer":
-                        if (!(scannedValue instanceof Double)) {
+                        if (scannedValue instanceof Double && ((Double) scannedValue) % 1 == 0) {
+                            environment.assign(stmt.name, ((Double) scannedValue).intValue());
+                        } else {
                             throw new RuntimeError(stmt.name, "Input must be an Integer");
                         }
                         break;
                     case "Float":
-                        if (!(scannedValue instanceof Double)) {
+                        if (scannedValue instanceof Double) {
+                            environment.assign(stmt.name, scannedValue);
+                        } else {
                             throw new RuntimeError(stmt.name, "Input must be a Float");
                         }
                         break;
                     case "Character":
-                        if (!(scannedValue instanceof Character)) {
+                        if (scannedValue instanceof Character) {
+                            environment.assign(stmt.name, scannedValue);
+                        } else {
                             throw new RuntimeError(stmt.name, "Input must be a Character");
                         }
                         break;
                     case "String":
-                        if (!(scannedValue instanceof String)) {
+                        if (scannedValue instanceof String) {
+                            environment.assign(stmt.name, scannedValue);
+                        } else {
                             throw new RuntimeError(stmt.name, "Input must be a String");
                         }
                         break;
@@ -121,13 +129,13 @@ class Interpreter implements Expr.Visitor<Object>,
                 }
             }
 
-            environment.assign(stmt.name, scannedValue);
             return null;
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeError(stmt.name, "Error reading input");
         }
     }
+
 
 
     @Override
@@ -274,7 +282,7 @@ class Interpreter implements Expr.Visitor<Object>,
 
         return null;
     }
-    
+
     @Override
     public Object visitLogicalExpr(Expr.Logical expr) {
       Object left = evaluate(expr.left);
