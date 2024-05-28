@@ -1,7 +1,6 @@
 BEGIN CODE
-	STRING x, y, z 
-	SCAN: x
-	SCAN: y
-	z = x & y
-	DISPLAY: z
+    BOOL a, b
+    SCAN: a
+    SCAN: b
+    DISPLAY: a AND b
 END CODE
