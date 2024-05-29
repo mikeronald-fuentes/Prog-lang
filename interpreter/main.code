@@ -1,6 +1,8 @@
 BEGIN CODE
-    INT x, y 
-    SCAN: x
-    SCAN: y
-    DISPLAY: x % y - 4
+INT a = 0
+WHILE(a<5)
+   BEGIN WHILE
+    DISPLAY: a
+    a = a + 1
+   END WHILE
 END CODE

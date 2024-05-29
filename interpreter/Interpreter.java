@@ -13,8 +13,10 @@ import interpreter.Stmt.Bool;
 import interpreter.Stmt.Char;
 import interpreter.Stmt.Display;
 import interpreter.Stmt.Float;
+import interpreter.Stmt.If;
 import interpreter.Stmt.Int;
 import interpreter.Stmt.Scan;
+import interpreter.Stmt.While;
 import interpreter.Stmt.NewLine;
 
 import java.io.BufferedReader;
@@ -178,7 +180,7 @@ class Interpreter implements Expr.Visitor<Object>,
         Object value = null;
         if (stmt.intializer != null) {
             value = evaluate(stmt.intializer);
-            if (!(value instanceof Double)) {
+            if (!(value instanceof Integer)) {
                 throw new RuntimeError(stmt.name, "Input must be an Integer");
             }
         }
@@ -413,5 +415,23 @@ class Interpreter implements Expr.Visitor<Object>,
         }
     
         return object.toString();
+      }
+
+      @Override
+      public Void visitIfStmt(If stmt) {
+          if(isTruthy(evaluate(stmt.condition))) {
+              execute(stmt.thenBranch);
+          } else if(stmt.elseBranch != null) {
+              execute(stmt.elseBranch);
+          }
+          return null;
+      }
+  
+      @Override
+      public Void visitWhileStmt(While stmt) {
+          while (isTruthy(evaluate(stmt.condition))) {
+              execute(stmt.body);
+          }
+          return null;
       }
 }

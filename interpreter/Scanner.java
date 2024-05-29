@@ -46,6 +46,9 @@ class Scanner {
       keywords.put("CODE", CODE);
       keywords.put("BEGIN", BEGIN);
       keywords.put("END", END);
+      keywords.put("IF", IF);
+      keywords.put("ELSE", ELSE);
+      keywords.put("WHILE", WHILE);
     }
     
     private void scanToken() {

@@ -355,15 +355,72 @@ class Parser {
             // System.out.println(previous());
             return newLineStatement();
         }
-
-        if (inBlock){
-            System.out.println("mcmo");
-        return expressionStatement();}
-        else{
-        Code.error(current, "Code must be inside BEGIN CODE and END CODE");
-        return null;}
+        if (match(IF)) return ifStatement();
+        if (match(WHILE)) return whileStatement();
+        // if (inBlock){
+        //     System.out.println("mcmo");
+        return expressionStatement();
+        // else{
+        // Code.error(current, "Code must be inside BEGIN CODE and END CODE");
+        // return null;}
     }
+    private Stmt whileStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'while'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect ')' after condition.");
 
+        Stmt body = null;
+        if (match(BEGIN) && match(WHILE)) {
+            List<Stmt> statements = new ArrayList<>();
+            while (!check(END) && !isAtEnd()) {
+                statements.add(declaration());
+            }
+            consume(END, "Expected 'END' after 'BEGIN IF' block.");
+            consume(WHILE, "Expected 'IF' after 'END'.");
+            body= new Stmt.Block(statements);
+        } else {
+            throw error(peek(), "Expected 'BEGIN IF' after condition");
+        }
+
+        return new Stmt.While(condition, body);
+    }
+    private Stmt ifStatement() {
+        consume(LEFT_PAREN, "Expected '(' after 'if'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expected ')' after if condition."); // [parens]
+
+        Stmt thenBranch = null;
+        if (match(BEGIN) && match(IF)) {
+            List<Stmt> statements = new ArrayList<>();
+            while (!check(END) && !isAtEnd()) {
+                statements.add(declaration());
+            }
+            consume(END, "Expected 'END' after 'BEGIN IF' block.");
+            consume(IF, "Expected 'IF' after 'END'.");
+            thenBranch = new Stmt.Block(statements);
+        } else {
+            throw error(peek(), "Expected 'BEGIN IF' after condition");
+        }
+
+        Stmt elseBranch = null;
+        if (match(ELSE)) {
+            if (match(IF)) {
+                elseBranch = ifStatement(); // Recursively handle else-if
+            } else if (match(BEGIN) && match(IF)) {
+                List<Stmt> elseStatements = new ArrayList<>();
+                while (!check(END) && !isAtEnd()) {
+                    elseStatements.add(declaration());
+                }
+                consume(END, "Expected 'END' after 'BEGIN IF' block.");
+                consume(IF, "Expected 'IF' after 'END'.");
+                elseBranch = new Stmt.Block(elseStatements);
+            } else {
+                throw error(peek(), "Expected 'BEGIN IF' after 'else'");
+            }
+        }
+
+        return new Stmt.If(condition, thenBranch, elseBranch);
+    }
     private List<Stmt> block() {
         List<Stmt> statements = new ArrayList<>();
 
