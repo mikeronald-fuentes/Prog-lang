@@ -41,6 +41,7 @@ class Parser {
     
         return expr;
       }
+
     // second rule
     private Expr equality() {
         Expr expr = comparison();
@@ -52,59 +53,6 @@ class Parser {
         }
     
         return expr;
-    }
-
-    // ... maps to a while loop, match method indicates when the loop will stop
-    // consumes token with has any of the given type and returns true; otherwise false
-    private boolean match(TokenType... types) {
-        for (TokenType type : types) {
-            if (check(type)) {
-                advance();
-                return true;
-            }
-        }
-    
-        return false;
-    }
-
-    // looks at the token and returns true if token is of given type
-    private boolean check(TokenType type) {
-        if (isAtEnd()) return false;
-        return peek().type == type;
-    }
-    private boolean checkNewline(TokenType type) {
-        if (isAtEnd()) return false;
-        return previous().type == type;
-    }
-    private boolean checkNext(TokenType type) {
-        if (isAtEnd())
-            return false;
-        return peekNext().type == type;
-    }
-
-    // consumes current token and returns it
-    private Token advance() {
-        if (!isAtEnd()) current++;
-        return previous();
-    }
-
-    // to check if there are no tokens left to parse
-    private boolean isAtEnd() {
-        return peek().type == EOF;
-    }
-    
-    // returns current token that is yet to be consumed
-    private Token peek() {
-        return tokens.get(current);
-    }
-
-    private Token peekNext() {
-        return tokens.get(current + 1);
-    }
-    
-    // returns the most recent consumed token
-    private Token previous() {
-        return tokens.get(current - 1);
     }
 
     // same with equality but matches different token
@@ -219,6 +167,60 @@ class Parser {
     
         return expr;
       }
+
+      // ... maps to a while loop, match method indicates when the loop will stop
+    // consumes token with has any of the given type and returns true; otherwise false
+    private boolean match(TokenType... types) {
+        for (TokenType type : types) {
+            if (check(type)) {
+                advance();
+                return true;
+            }
+        }
+    
+        return false;
+    }
+
+    // looks at the token and returns true if token is of given type
+    private boolean check(TokenType type) {
+        if (isAtEnd()) return false;
+        return peek().type == type;
+    }
+    private boolean checkNewline(TokenType type) {
+        if (isAtEnd()) return false;
+        return previous().type == type;
+    }
+    private boolean checkNext(TokenType type) {
+        if (isAtEnd())
+            return false;
+        return peekNext().type == type;
+    }
+
+    // consumes current token and returns it
+    private Token advance() {
+        if (!isAtEnd()) current++;
+        return previous();
+    }
+
+    // to check if there are no tokens left to parse
+    private boolean isAtEnd() {
+        return peek().type == EOF;
+    }
+    
+    // returns current token that is yet to be consumed
+    private Token peek() {
+        return tokens.get(current);
+    }
+
+    private Token peekNext() {
+        return tokens.get(current + 1);
+    }
+    
+    // returns the most recent consumed token
+    private Token previous() {
+        return tokens.get(current - 1);
+    }
+    
     private Token consume(TokenType type, String message) {
         if (check(type)) return advance();
     
@@ -304,10 +306,6 @@ class Parser {
         
         Token name = consume(IDENTIFIER, "Reserved keyword cannot be used as variable name.");
 
-        // if(!(peek().type == IDENTIFIER)){
-        //     consume(RESERVED, "Reserved keyword cannot be used as variable name");
-        // }
-
         if (startedExecutable){
             Code.error(previous().line, "Variable declarations must precede executable statements.");
         }
@@ -354,25 +352,16 @@ class Parser {
     private Stmt statement() {
         if (match(BEGIN) && match(CODE)) {
             inBlock = true;
-            // System.out.println("omcm");
             return new Stmt.Block(block());
         }
         if (match(DISPLAY) && match(COLON)) return displayStatement();
         if (match(FOR)) return forStatement();
         if (match(SCAN) && match(COLON)) {return scanStatement();}
-        if (match(NEW_LINE)) {
-            // System.out.println(peek());
-            // System.out.println(previous());
-            return newLineStatement();
-        }
+        if (match(NEW_LINE)) return newLineStatement();
         if (match(IF)) return ifStatement();
         if (match(WHILE)) return whileStatement();
-        // if (inBlock){
-        //     System.out.println("mcmo");
+        
         return expressionStatement();
-        // else{
-        // Code.error(current, "Code must be inside BEGIN CODE and END CODE");
-        // return null;}
     }
 
     private Stmt forStatement() {
@@ -431,6 +420,7 @@ class Parser {
 
         return body;
     }
+
     private Stmt whileStatement() {
         consume(LEFT_PAREN, "Expect '(' after 'while'.");
         Expr condition = expression();
@@ -451,6 +441,7 @@ class Parser {
 
         return new Stmt.While(condition, body);
     }
+
     private Stmt ifStatement() {
         consume(LEFT_PAREN, "Expected '(' after 'if'.");
         Expr condition = expression();
@@ -488,6 +479,7 @@ class Parser {
 
         return new Stmt.If(condition, thenBranch, elseBranch);
     }
+
     private List<Stmt> block() {
         List<Stmt> statements = new ArrayList<>();
 
@@ -508,8 +500,6 @@ class Parser {
 
     private Stmt scanStatement() {
         Token name = consume(IDENTIFIER, "Expect variable name after 'scan'.");
-        // System.out.println(name);
-        // System.out.println("2");
         return new Stmt.Scan(name, null);
     }
 

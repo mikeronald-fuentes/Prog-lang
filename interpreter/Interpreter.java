@@ -43,45 +43,15 @@ class Interpreter implements Expr.Visitor<Object>,
         evaluate(stmt.expression);
         return null;
     }
+
     @Override
     public Void visitDisplayStmt(Stmt.Display stmt) {
         Object value = evaluate(stmt.expression);
         System.out.println();
-        // if(value == "TRUE" || value == "FALSE")
-        // System.out.println(stringify(value).toUpperCase());
-        // else
         System.out.println(stringify(value));
         return null;
     }
 
-    private Object scanInput() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Enter: ");
-        String scanned = reader.readLine().trim();
-        
-        if (scanned.equalsIgnoreCase("TRUE") || scanned.equalsIgnoreCase("FALSE")) {
-            return Boolean.parseBoolean(scanned);
-        }
-        Object value = tryParse(scanned, Integer::parseInt);
-        if (value != null) return value;
-
-        value = tryParse(scanned, Double::parseDouble);
-        if (value != null) return value;
-    
-        if (scanned.length() == 1) {
-            return scanned.charAt(0);
-        }
-        return scanned;
-    }
-    
-    private <T> T tryParse(String input, Parser<T> parser) {
-        try {
-            return parser.parse(input);
-        } catch (NumberFormatException ignored) {
-            return null;
-        }
-    }
-    
     @FunctionalInterface
     interface Parser<T> {
         T parse(String input) throws NumberFormatException;
@@ -92,8 +62,7 @@ class Interpreter implements Expr.Visitor<Object>,
         try {
             Object scannedValue = scanInput();
             String tokenType = environment.getTokenType(stmt.name.lexeme);
-            // System.out.println(tokenType);
-            // System.out.println("3");
+            
             if (tokenType != null) {
                 switch (tokenType) {
                     case "Boolean":
@@ -105,7 +74,6 @@ class Interpreter implements Expr.Visitor<Object>,
                         break;
                     case "Integer":
                         if (scannedValue instanceof Integer && ((Integer) scannedValue) % 1 == 0) {
-                            // System.out.println(stmt.name);
                             environment.assign(stmt.name, ((Integer) scannedValue).intValue());
                         } else {
                             throw new RuntimeError(stmt.name, "Input must be an Integer");
@@ -307,10 +275,54 @@ class Interpreter implements Expr.Visitor<Object>,
         return null;
     }
 
+    @Override
+      public Void visitIfStmt(If stmt) {
+          if(isTruthy(evaluate(stmt.condition))) {
+              execute(stmt.thenBranch);
+          } else if(stmt.elseBranch != null) {
+              execute(stmt.elseBranch);
+          }
+          return null;
+      }
+  
+      @Override
+      public Void visitWhileStmt(While stmt) {
+          while (isTruthy(evaluate(stmt.condition))) {
+              execute(stmt.body);
+          }
+          return null;
+      }
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }
 
+    private Object scanInput() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter: ");
+        String scanned = reader.readLine().trim();
+        
+        if (scanned.equalsIgnoreCase("TRUE") || scanned.equalsIgnoreCase("FALSE")) {
+            return Boolean.parseBoolean(scanned);
+        }
+        Object value = tryParse(scanned, Integer::parseInt);
+        if (value != null) return value;
+
+        value = tryParse(scanned, Double::parseDouble);
+        if (value != null) return value;
+    
+        if (scanned.length() == 1) return scanned.charAt(0);
+        return scanned;
+    }
+    
+    private <T> T tryParse(String input, Parser<T> parser) {
+        try {
+            return parser.parse(input);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+    
     private Object checkNumberOperands(Token operator, String symbol, Object left, Object right) {
 
         if(left == null || right == null)
@@ -361,8 +373,7 @@ class Interpreter implements Expr.Visitor<Object>,
 
     }
             
-    throw new RuntimeError(operator, "Operands must be numbers.");
-        
+        throw new RuntimeError(operator, "Operands must be numbers.");
     }
 
     private void checkNumberOperand(Token operator, Object operand) {
@@ -422,23 +433,5 @@ class Interpreter implements Expr.Visitor<Object>,
         }
     
         return object.toString();
-      }
-
-      @Override
-      public Void visitIfStmt(If stmt) {
-          if(isTruthy(evaluate(stmt.condition))) {
-              execute(stmt.thenBranch);
-          } else if(stmt.elseBranch != null) {
-              execute(stmt.elseBranch);
-          }
-          return null;
-      }
-  
-      @Override
-      public Void visitWhileStmt(While stmt) {
-          while (isTruthy(evaluate(stmt.condition))) {
-              execute(stmt.body);
-          }
-          return null;
       }
 }
