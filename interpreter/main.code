@@ -1,6 +1,6 @@
 BEGIN CODE
-    INT INT
-    INT a = 10
-    DISPLAY: a
+    CHAR a, b 
+    a='c'
+    b=a
+    DISPLAY: a & # & b 
 END CODE
-
