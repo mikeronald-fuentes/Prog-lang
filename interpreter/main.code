@@ -1,6 +1,7 @@
 BEGIN CODE
-
-    INT FLOAT
-    INT a = 10
-    DISPLAY: a
+    FLOAT sum
+    FLOAT x
+    SCAN: x
+    sum = sum + x
+    DISPLAY: [[] & sum & [[]
 END CODE

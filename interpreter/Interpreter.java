@@ -313,6 +313,10 @@ class Interpreter implements Expr.Visitor<Object>,
 
     private Object checkNumberOperands(Token operator, String symbol, Object left, Object right) {
 
+        if(left == null)
+            throw new RuntimeError(operator, "Left operand doesn't have a value.");
+        else if(right == null)
+            throw new RuntimeError(operator, "Right operand doesn't have a value.");
         
         if(left instanceof Integer && right instanceof Integer){
             if(symbol == "+")
