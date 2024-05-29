@@ -348,12 +348,12 @@ class Parser {
     private Stmt statement() {
         if (match(BEGIN) && match(CODE)) {
             inBlock = true;
-            System.out.println("omcm");
+            // System.out.println("omcm");
             return new Stmt.Block(block());
         }
         if (match(DISPLAY) && match(COLON)) return displayStatement();
         
-        if (match(SCAN) && match(COLON)) {System.out.println("1");return scanStatement();}
+        if (match(SCAN) && match(COLON)) {return scanStatement();}
         if (match(NEW_LINE)) {
             // System.out.println(peek());
             // System.out.println(previous());
@@ -445,8 +445,8 @@ class Parser {
 
     private Stmt scanStatement() {
         Token name = consume(IDENTIFIER, "Expect variable name after 'scan'.");
-        System.out.println(name);
-        System.out.println("2");
+        // System.out.println(name);
+        // System.out.println("2");
         return new Stmt.Scan(name, null);
     }
 

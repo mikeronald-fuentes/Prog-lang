@@ -1,7 +1,6 @@
 BEGIN CODE
-    FLOAT sum
-    FLOAT x
-    SCAN: x
-    sum = sum + x
-    DISPLAY: [[] & sum & [[]
+    CHAR a, b 
+    a='c'
+    b=a
+    DISPLAY: a & # & b 
 END CODE
