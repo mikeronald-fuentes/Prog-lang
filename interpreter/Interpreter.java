@@ -231,7 +231,10 @@ class Interpreter implements Expr.Visitor<Object>,
             return !isTruthy(right);
         case SUBTRACTION:
             checkNumberOperand(expr.operator, right);
-            return -(double)right;
+            if(right instanceof Integer)
+                return -(int)right;
+            else
+                return -(double)right;
         }
 
         return null;
@@ -377,7 +380,7 @@ class Interpreter implements Expr.Visitor<Object>,
     }
 
     private void checkNumberOperand(Token operator, Object operand) {
-        if (operand instanceof Double) return;
+        if (operand instanceof Double || operand instanceof Integer) return;
         throw new RuntimeError(operator, "Operand must be a number.");
     }
 

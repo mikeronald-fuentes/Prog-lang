@@ -1,5 +1,4 @@
 BEGIN CODE
-    BOOL a = "TRUE", b = "FALSE", c = TRUE
-    SCAN: b
-    DISPLAY: (NOT a AND b) OR b
+	FLOAT x = -5.0
+	DISPLAY: x
 END CODE
