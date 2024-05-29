@@ -1,8 +1,6 @@
 BEGIN CODE
-INT a = 0
-WHILE(a<5)
-   BEGIN WHILE
+
+    INT FLOAT
+    INT a = 10
     DISPLAY: a
-    a = a + 1
-   END WHILE
 END CODE

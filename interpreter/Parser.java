@@ -295,8 +295,12 @@ class Parser {
 
     private Stmt variableDeclaration(String type) {
         List<Stmt> declarations = new ArrayList<>();
-        Token name = consume(IDENTIFIER, "Expect variable name.");
         Expr initializer = null;
+
+        if(!(peek().type == IDENTIFIER)){
+            consume(RESERVED, "Reserved keyword cannot be used as variable name");
+        }
+        Token name = consume(IDENTIFIER, "Variable name should start with a letter or an underscore.");
 
         if (startedExecutable){
             Code.error(previous().line, "Variable declarations must precede executable statements.");
