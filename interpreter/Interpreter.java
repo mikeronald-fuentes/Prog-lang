@@ -313,11 +313,10 @@ class Interpreter implements Expr.Visitor<Object>,
 
     private Object checkNumberOperands(Token operator, String symbol, Object left, Object right) {
 
-        if(left == null)
-            throw new RuntimeError(operator, "Can not perform operations on null values.");
-        else if(right == null)
+        if(left == null || right == null)
             throw new RuntimeError(operator, "Can not perform operations on null values.");
         
+        try{
         if(left instanceof Integer && right instanceof Integer){
             if(symbol == "+")
                 return (int)left + (int)right;
@@ -357,9 +356,13 @@ class Interpreter implements Expr.Visitor<Object>,
             else if(symbol == "<=")
                 return (double)left <= (double)right;
         }
+    }catch(ClassCastException inv){
+        throw new RuntimeError(operator, "Can not perform operation on different datatype.");
+
+    }
             
+    throw new RuntimeError(operator, "Operands must be numbers.");
         
-        throw new RuntimeError(operator, "Operands must be numbers.");
     }
 
     private void checkNumberOperand(Token operator, Object operand) {

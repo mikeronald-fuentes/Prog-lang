@@ -298,10 +298,15 @@ class Parser {
         List<Stmt> declarations = new ArrayList<>();
         Expr initializer = null;
 
-        if(!(peek().type == IDENTIFIER)){
-            consume(RESERVED, "Reserved keyword cannot be used as variable name");
+        if (!(Character.isLetter(peek().lexeme.charAt(0))) && !(peek().lexeme.charAt(0) == '_')) {
+            consume(IDENTIFIER, "Variable name must start with a letter or underscore.");
         }
-        Token name = consume(IDENTIFIER, "Variable name should start with a letter or an underscore.");
+        
+        Token name = consume(IDENTIFIER, "Reserved keyword cannot be used as variable name.");
+
+        // if(!(peek().type == IDENTIFIER)){
+        //     consume(RESERVED, "Reserved keyword cannot be used as variable name");
+        // }
 
         if (startedExecutable){
             Code.error(previous().line, "Variable declarations must precede executable statements.");

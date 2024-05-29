@@ -1,8 +1,5 @@
 BEGIN CODE
-INT z
-FOR(INT a = 0; a < 10; a = a + 1)
-BEGIN FOR
-SCAN: z
-DISPLAY: a * z
-END FOR
+    BOOL a = "TRUE", b = "FALSE", c = TRUE
+    SCAN: b
+    DISPLAY: (NOT a AND b) OR b
 END CODE
