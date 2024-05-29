@@ -1,6 +1,7 @@
 package interpreter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static interpreter.TokenType.*;
@@ -352,7 +353,7 @@ class Parser {
             return new Stmt.Block(block());
         }
         if (match(DISPLAY) && match(COLON)) return displayStatement();
-        
+        if (match(FOR)) return forStatement();
         if (match(SCAN) && match(COLON)) {return scanStatement();}
         if (match(NEW_LINE)) {
             // System.out.println(peek());
@@ -367,6 +368,63 @@ class Parser {
         // else{
         // Code.error(current, "Code must be inside BEGIN CODE and END CODE");
         // return null;}
+    }
+
+    private Stmt forStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'for'.");
+
+        Stmt initializer;
+        if (match(SEMICOLON)) {
+            initializer = null;
+        } else if (match(INT)) {
+            initializer = variableDeclaration("INT");
+        } else {
+            initializer = expressionStatement();
+        }
+        consume(SEMICOLON, "Expect ';' after loop initializer.");
+
+        Expr condition = null;
+        if (!check(SEMICOLON)) {
+            condition = expression();
+        }
+        consume(SEMICOLON, "Expect ';' after loop condition.");
+
+        Expr increment = null;
+        if (!check(RIGHT_PAREN)) {
+            increment = expression();
+        }
+        consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+
+        Stmt body = null;
+        if (match(BEGIN) && match(FOR)) {
+            List<Stmt> statements = new ArrayList<>();
+            while (!check(END) && !isAtEnd()) {
+                statements.add(declaration());
+            }
+            body = new Stmt.Block(statements);
+            consume(END, "Expected 'END' after 'BEGIN FOR' block.");
+            consume(FOR, "Expected 'FOR' after 'END'.");
+        } else {
+            throw error(peek(), "Expected 'BEGIN FOR' after ')' in for loop.");
+        }
+
+        // Add increment as the last statement in the loop body
+        if (increment != null) {
+            body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
+        }
+
+        // Construct the while loop with condition and body
+        if (condition == null) {
+            condition = new Expr.Literal(true);
+        }
+        body = new Stmt.While(condition, body);
+
+        // Add initializer before the loop if present
+        if (initializer != null) {
+            body = new Stmt.Block(Arrays.asList(initializer, body));
+        }
+
+        return body;
     }
     private Stmt whileStatement() {
         consume(LEFT_PAREN, "Expect '(' after 'while'.");

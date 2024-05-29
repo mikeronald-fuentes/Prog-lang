@@ -2,7 +2,7 @@ package interpreter;
 
 enum TokenType {
     // Single-character tokens.
-    CLASS, IF, ELSE, NULL, THIS, DISPLAY,
+    CLASS, IF, ELSE, NULL, THIS, DISPLAY, FOR,
     TRUE, FALSE, WHILE, BEGIN, END, PRINT,
     SCAN, BEGIN_IF, END_IF, CODE, 
 
