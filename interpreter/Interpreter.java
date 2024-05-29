@@ -92,8 +92,8 @@ class Interpreter implements Expr.Visitor<Object>,
         try {
             Object scannedValue = scanInput();
             String tokenType = environment.getTokenType(stmt.name.lexeme);
-            System.out.println(tokenType);
-            System.out.println("3");
+            // System.out.println(tokenType);
+            // System.out.println("3");
             if (tokenType != null) {
                 switch (tokenType) {
                     case "Boolean":
@@ -105,7 +105,7 @@ class Interpreter implements Expr.Visitor<Object>,
                         break;
                     case "Integer":
                         if (scannedValue instanceof Integer && ((Integer) scannedValue) % 1 == 0) {
-                            System.out.println(stmt.name);
+                            // System.out.println(stmt.name);
                             environment.assign(stmt.name, ((Integer) scannedValue).intValue());
                         } else {
                             throw new RuntimeError(stmt.name, "Input must be an Integer");
@@ -314,9 +314,9 @@ class Interpreter implements Expr.Visitor<Object>,
     private Object checkNumberOperands(Token operator, String symbol, Object left, Object right) {
 
         if(left == null)
-            throw new RuntimeError(operator, "Left operand doesn't have a value.");
+            throw new RuntimeError(operator, "Can not perform operations on null values.");
         else if(right == null)
-            throw new RuntimeError(operator, "Right operand doesn't have a value.");
+            throw new RuntimeError(operator, "Can not perform operations on null values.");
         
         if(left instanceof Integer && right instanceof Integer){
             if(symbol == "+")
