@@ -1,4 +1,6 @@
 BEGIN CODE
-
-DISPLAY: "This is the " & [$] & " end of a line."
+    INT INT
+    INT a = 10
+    DISPLAY: a
 END CODE
+

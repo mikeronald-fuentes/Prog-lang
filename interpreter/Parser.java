@@ -281,7 +281,11 @@ class Parser {
 
     private Stmt variableDeclaration(String type) {
         List<Stmt> declarations = new ArrayList<>();
-        Token name = consume(IDENTIFIER, "Expect variable name.");
+        // For reserved words
+        if(!(peek().type == IDENTIFIER)){
+            consume(RESERVED, "Reserved keyword cannot be used as variable name");
+        }
+        Token name = consume(IDENTIFIER, "Variable name should start with a letter or an underscore."); // A: Updated error message
         Expr initializer = null;
     
         if (match(ASSIGN)) {
