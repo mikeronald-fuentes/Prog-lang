@@ -1,14 +1,10 @@
+
+
 BEGIN CODE
-IF(5 < 2)
-BEGIN IF
-DISPLAY: "bitch"
-END IF
-ELSE IF(2 <> 2)
-BEGIN IF
-DISPLAY: "slut"
-END IF
-ELSE
-BEGIN IF
-DISPLAY: "ugly"
-END IF
+INT a = 0
+WHILE(a<5)
+   BEGIN WHILE
+    DISPLAY: a
+    a = a + 1
+   END WHILE
 END CODE

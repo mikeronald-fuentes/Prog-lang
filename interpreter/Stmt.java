@@ -16,6 +16,7 @@ abstract class Stmt {
       R visitVariableDeclarationStmt(variableDeclaration stmt);
       R visitNewLineStmt(NewLine stmt);
       R visitIfStmt(If stmt);
+      R visitWhileStmt(While stmt);
     }
     static class Block extends Stmt {
         Block(List<Stmt> statements) {
@@ -172,6 +173,21 @@ abstract class Stmt {
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitNewLineStmt(this);
         }
+    }
+
+    static class While extends Stmt {
+        While(Expr condition, Stmt body) {
+            this.condition = condition;
+            this.body = body;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitWhileStmt(this);
+        }
+
+        final Expr condition;
+        final Stmt body;
     }
     abstract <R> R accept(Visitor<R> visitor);
 }
