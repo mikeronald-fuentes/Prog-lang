@@ -10,6 +10,7 @@ class Parser {
     private static class ParseError extends RuntimeException {}
     private boolean inBlock = false;
     private final List<Token> tokens;
+    private boolean startedExecutable = false;
     // to point to the next token
     private int current = 0;
     private boolean block = false;
@@ -113,6 +114,8 @@ class Parser {
         while (match(GREATER_THAN, GREATER_THAN_EQUAL, LESS_THAN, LESS_THAN_EQUAL)) {
           Token operator = previous();
           Expr right = term();
+          startedExecutable = true;
+        //   System.out.println("omcmcomparison");
           expr = new Expr.Binary(expr, operator, right);
         }
     
@@ -126,6 +129,8 @@ class Parser {
         while (match(SUBTRACTION, ADDITION, CONCATENATOR)) {
           Token operator = previous();
           Expr right = factor();
+          startedExecutable = true;
+        //   System.out.println("omcmterm");
           expr = new Expr.Binary(expr, operator, right);
         }
     
@@ -139,6 +144,8 @@ class Parser {
         while (match(DIVISION, MULTIPLY, MODULO)) {
           Token operator = previous();
           Expr right = unary();
+          startedExecutable = true;
+        //   System.out.println("omcmfactor");
           expr = new Expr.Binary(expr, operator, right);
         }
     
@@ -150,6 +157,8 @@ class Parser {
         if (match(NOT, SUBTRACTION)) {
           Token operator = previous();
           Expr right = unary();
+          startedExecutable = true;
+        //   System.out.println("omcmunary");
           return new Expr.Unary(operator, right);
         }
     
@@ -260,7 +269,7 @@ class Parser {
     }
 
     private Stmt declaration() {
-        try {
+        try {   
             if (match(CHAR)) 
                 return variableDeclaration("CHAR");
             if (match(STRING)) 
@@ -288,11 +297,15 @@ class Parser {
         List<Stmt> declarations = new ArrayList<>();
         Token name = consume(IDENTIFIER, "Expect variable name.");
         Expr initializer = null;
-    
+
+        if (startedExecutable){
+            Code.error(previous().line, "Variable declarations must precede executable statements.");
+        }
+
         if (match(ASSIGN)) {
             initializer = expression();
         }
-    
+
         declarations.add(createVariableStmt(type, name, initializer));
     
         while (match(COMMA)) {
@@ -336,8 +349,8 @@ class Parser {
         } 
         if (match(SCAN) && match(COLON)) return scanStatement();
         if (match(NEW_LINE)) {
-            System.out.println(peek());
-            System.out.println(previous());
+            // System.out.println(peek());
+            // System.out.println(previous());
             return newLineStatement();
         }
         return expressionStatement();

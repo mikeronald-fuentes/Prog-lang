@@ -45,6 +45,9 @@ class Interpreter implements Expr.Visitor<Object>,
     public Void visitDisplayStmt(Stmt.Display stmt) {
         Object value = evaluate(stmt.expression);
         System.out.println();
+        // if(value == "TRUE" || value == "FALSE")
+        // System.out.println(stringify(value).toUpperCase());
+        // else
         System.out.println(stringify(value));
         return null;
     }
@@ -55,7 +58,6 @@ class Interpreter implements Expr.Visitor<Object>,
         String scanned = reader.readLine().trim();
         
         if (scanned.equalsIgnoreCase("TRUE") || scanned.equalsIgnoreCase("FALSE")) {
-            System.out.println("omcm");
             return Boolean.parseBoolean(scanned);
         }
 
@@ -135,8 +137,6 @@ class Interpreter implements Expr.Visitor<Object>,
             throw new RuntimeError(stmt.name, "Error reading input");
         }
     }
-
-
 
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {

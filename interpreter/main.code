@@ -1,6 +1,5 @@
 BEGIN CODE
-    BOOL a, b
-    SCAN: a
-    SCAN: b
-    DISPLAY: a AND b
+	INT sum=0
+	FLOAT ave	
+	sum = sum + 5
 END CODE
