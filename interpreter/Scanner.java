@@ -221,14 +221,14 @@ class Scanner {
           advance();
     
           while (isDigit(peek())) advance();
-        
-    
+          addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
+          return;
         // return;
       } else if (isAlpha(peek())){
         Code.error(line, "Invalid variable name");
         return;
       }
-      addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
+      addToken(NUMBER, Integer.parseInt(source.substring(start, current)));
     }
 
     private char peekNext() {

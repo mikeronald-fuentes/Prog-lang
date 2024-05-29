@@ -60,8 +60,10 @@ class Interpreter implements Expr.Visitor<Object>,
         if (scanned.equalsIgnoreCase("TRUE") || scanned.equalsIgnoreCase("FALSE")) {
             return Boolean.parseBoolean(scanned);
         }
+        Object value = tryParse(scanned, Integer::parseInt);
+        if (value != null) return value;
 
-        Object value = tryParse(scanned, Double::parseDouble);
+        value = tryParse(scanned, Double::parseDouble);
         if (value != null) return value;
     
         if (scanned.length() == 1) {
@@ -88,7 +90,8 @@ class Interpreter implements Expr.Visitor<Object>,
         try {
             Object scannedValue = scanInput();
             String tokenType = environment.getTokenType(stmt.name.lexeme);
-
+            System.out.println(tokenType);
+            System.out.println("3");
             if (tokenType != null) {
                 switch (tokenType) {
                     case "Boolean":
@@ -99,8 +102,9 @@ class Interpreter implements Expr.Visitor<Object>,
                         }
                         break;
                     case "Integer":
-                        if (scannedValue instanceof Double && ((Double) scannedValue) % 1 == 0) {
-                            environment.assign(stmt.name, ((Double) scannedValue).intValue());
+                        if (scannedValue instanceof Integer && ((Integer) scannedValue) % 1 == 0) {
+                            System.out.println(stmt.name);
+                            environment.assign(stmt.name, ((Integer) scannedValue).intValue());
                         } else {
                             throw new RuntimeError(stmt.name, "Input must be an Integer");
                         }
@@ -151,39 +155,19 @@ class Interpreter implements Expr.Visitor<Object>,
         Object right = evaluate(expr.right); 
 
         switch (expr.operator.type) {
-        case GREATER_THAN:
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left > (double)right;
-        case GREATER_THAN_EQUAL:
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left >= (double)right;
-        case LESS_THAN:
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left < (double)right;
-        case LESS_THAN_EQUAL:
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left <= (double)right;
-        case SUBTRACTION:
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left - (double)right;
-        case ADDITION:
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left + (double)right;
-        case DIVISION:
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left / (double)right;
-        case MULTIPLY:
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left * (double)right;
-        case NOT_EQUAL: return !isEqual(left, right);
-        case EQUAL_EQUAL: return isEqual(left, right);
-        case MODULO: 
-            checkNumberOperands(expr.operator, left, right);
-            return (double)left % (double)right;
-        case CONCATENATOR: 
-            return stringify(left) + stringify(right);
-        case NEW_LINE:
-            return (stringify(left) + "\n" + stringify(right));
+            case GREATER_THAN: return checkNumberOperands(expr.operator, ">", left, right);
+            case GREATER_THAN_EQUAL: return checkNumberOperands(expr.operator, ">=", left, right);
+            case LESS_THAN: return checkNumberOperands(expr.operator, "<", left, right);
+            case LESS_THAN_EQUAL: return checkNumberOperands(expr.operator, "<=", left, right);
+            case SUBTRACTION: return checkNumberOperands(expr.operator, "-", left, right);
+            case ADDITION: return checkNumberOperands(expr.operator, "+", left, right);
+            case DIVISION: return checkNumberOperands(expr.operator,"/", left, right);
+            case MULTIPLY: return checkNumberOperands(expr.operator, "*", left, right);
+            case MODULO: return checkNumberOperands(expr.operator, "%", left, right);
+            case NOT_EQUAL: return !isEqual(left, right);
+            case EQUAL_EQUAL: return isEqual(left, right);
+            case CONCATENATOR: return stringify(left) + stringify(right);
+            case NEW_LINE: return (stringify(left) + "\n" + stringify(right));
         }
 
         return null;
@@ -325,8 +309,49 @@ class Interpreter implements Expr.Visitor<Object>,
         return expr.accept(this);
     }
 
-    private void checkNumberOperands(Token operator, Object left, Object right) {
-        if (left instanceof Double && right instanceof Double) return;
+    private Object checkNumberOperands(Token operator, String symbol, Object left, Object right) {
+
+        
+        if(left instanceof Integer && right instanceof Integer){
+            if(symbol == "+")
+                return (int)left + (int)right;
+            else if(symbol == "-")
+                return (int)left - (int)right;
+            else if(symbol == "/")
+                return (int)left / (int)right;
+            else if(symbol == "*")
+                return (int)left * (int)right;
+            else if(symbol == "%")
+                return (int)left % (int)right;
+            else if(symbol == ">")
+                return (int)left > (int)right;
+            else if(symbol == "<")
+                return (int)left < (int)right;
+            else if(symbol == ">=")
+                return (int)left >= (int)right;
+            else if(symbol == "<=")
+                return (int)left <= (int)right;
+        }else{
+            if(symbol == "+")
+                return (double)left + (double)right;
+            else if(symbol == "-")
+                return (double)left - (double)right;
+            else if(symbol == "/")
+                return (double)left / (double)right;
+            else if(symbol == "*")
+                return (double)left * (double)right;
+            else if(symbol == "%")
+                return (double)left % (double)right;
+            else if(symbol == ">")
+                return (double)left > (double)right;
+            else if(symbol == "<")
+                return (double)left < (double)right;
+            else if(symbol == ">=")
+                return (double)left >= (double)right;
+            else if(symbol == "<=")
+                return (double)left <= (double)right;
+        }
+            
         
         throw new RuntimeError(operator, "Operands must be numbers.");
     }
