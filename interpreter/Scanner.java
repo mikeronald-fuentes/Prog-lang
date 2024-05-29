@@ -39,6 +39,8 @@ class Scanner {
       keywords.put("STRING", STRING);
       keywords.put("AND", AND);
       keywords.put("OR", OR);
+      keywords.put("IF", IF);
+      keywords.put("ELSE", ELSE);
       keywords.put("NOT", NOT);
       keywords.put("DISPLAY", DISPLAY);
       keywords.put("SCAN", SCAN);
@@ -46,6 +48,7 @@ class Scanner {
       keywords.put("CODE", CODE);
       keywords.put("BEGIN", BEGIN);
       keywords.put("END", END);
+
     }
     
     private void scanToken() {

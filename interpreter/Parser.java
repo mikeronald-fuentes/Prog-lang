@@ -333,7 +333,8 @@ class Parser {
         if (match(BEGIN) && match(CODE)) {
             
             return new Stmt.Block(block());
-        } 
+        }
+        if (match(IF)) return ifStatement();
         if (match(SCAN) && match(COLON)) return scanStatement();
         if (match(NEW_LINE)) {
             System.out.println(peek());
@@ -356,6 +357,39 @@ class Parser {
         return statements;
     }
 
+    private Stmt ifStatement() {
+        consume(LEFT_PAREN, "Expected '(' after 'if'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expected ')' after if condition."); // [parens]
+
+        Stmt thenBranch = null;
+        if (match(BEGIN) && match(IF)){
+            thenBranch = statement();
+        } else {
+            throw error(peek(), "Expected 'BEGIN IF' after condition");
+        }
+        if (!(match(END) && match(IF))){
+            throw error(peek(), "Expected 'END IF' after statement");
+        }
+
+        Stmt elseBranch = null;
+        if (match(ELSE)) {
+            if (match(IF)) {
+                elseBranch = ifStatement(); // Recursively handle else-if
+            } else {
+                if (match(BEGIN) && match(IF)) {
+                    elseBranch = statement();
+                    if (!(match(END) && match(IF))){
+                        throw error(peek(), "Expected 'END IF' after else statement");
+                    }
+                } else {
+                    throw error(peek(), "Expected 'BEGIN IF' after 'else'");
+                }
+            }
+        }
+
+        return new Stmt.If(condition, thenBranch, elseBranch);
+    }
     private Stmt displayStatement() {
         Expr value = expression();
         return new Stmt.Display(value);
