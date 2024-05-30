@@ -1,6 +1,5 @@
 BEGIN CODE
-    STRING a = "omcm"
-    INT b 
-    SCAN: b
-    DISPLAY: a & 
+BEGIN CODE
 END CODE
+END CODE
+

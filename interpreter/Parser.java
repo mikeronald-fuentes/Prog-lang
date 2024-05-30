@@ -349,9 +349,17 @@ class Parser {
     }
 
     private Stmt statement() {
+        
         if (match(BEGIN) && match(CODE)) {
+            if(inBlock){
+                throw error(peek(), "Unexpected input found after END CODE.");
+            }
             inBlock = true;
             return new Stmt.Block(block());
+        }
+        
+        if (match(END) && match(CODE)){
+            if(inBlock) throw error(peek(), "Unexpected input found after END CODE.");
         }
         if (match(DISPLAY) && match(COLON)) return displayStatement();
         if (match(FOR)) return forStatement();
@@ -361,6 +369,7 @@ class Parser {
         if (match(WHILE)) return whileStatement();
         
         return expressionStatement();
+    
     }
 
     private Stmt forStatement() {
