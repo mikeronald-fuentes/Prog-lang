@@ -1,4 +1,6 @@
 BEGIN CODE
-	FLOAT x = -5.0
-	DISPLAY: x
+    STRING a = "omcm"
+    INT b 
+    SCAN: b
+    DISPLAY: a & 
 END CODE

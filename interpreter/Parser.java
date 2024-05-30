@@ -46,7 +46,7 @@ class Parser {
     private Expr equality() {
         Expr expr = comparison();
     
-        while (match(NOT_EQUAL, EQUAL_EQUAL)) {
+        while (match(NOT_EQUAL, EQUAL_EQUAL, NEW_LINE)) {
           Token operator = previous();
           Expr right = comparison();
           expr = new Expr.Binary(expr, operator, right);
@@ -60,7 +60,7 @@ class Parser {
     private Expr comparison() {
         Expr expr = term();
     
-        while (match(GREATER_THAN, GREATER_THAN_EQUAL, LESS_THAN, LESS_THAN_EQUAL)) {
+        while (match(GREATER_THAN, GREATER_THAN_EQUAL, LESS_THAN, LESS_THAN_EQUAL, NEW_LINE)) {
           Token operator = previous();
           Expr right = term();
           startedExecutable = true;
@@ -75,7 +75,7 @@ class Parser {
     private Expr term() {
         Expr expr = factor();
     
-        while (match(SUBTRACTION, ADDITION, CONCATENATOR)) {
+        while (match(SUBTRACTION, ADDITION, CONCATENATOR, NEW_LINE)) {
           Token operator = previous();
           Expr right = factor();
           startedExecutable = true;
@@ -90,7 +90,7 @@ class Parser {
     private Expr factor() {
         Expr expr = unary();
     
-        while (match(DIVISION, MULTIPLY, MODULO)) {
+        while (match(DIVISION, MULTIPLY, MODULO, NEW_LINE)) {
           Token operator = previous();
           Expr right = unary();
           startedExecutable = true;
@@ -103,7 +103,7 @@ class Parser {
 
     // for unary operators
     private Expr unary() {
-        if (match(NOT, SUBTRACTION)) {
+        if (match(NOT, SUBTRACTION, NEW_LINE)) {
           Token operator = previous();
           Expr right = unary();
           startedExecutable = true;
@@ -121,7 +121,6 @@ class Parser {
         if (match(NULL)) return new Expr.Literal(null);
     
         if (match(NUMBER, STRING, CHAR)) {
-            // System.out.println(previous().literal);
             return new Expr.Literal(previous().literal);
         }
 
